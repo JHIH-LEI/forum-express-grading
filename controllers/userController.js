@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const db = require('../models')
 const User = db.User
 
@@ -28,6 +28,18 @@ const userController = {
             res.redirect('/signin')
           })
       })
+  },
+  signinPage: (req, res) => {
+    return res.render('signin')
+  },
+  signin: (req, res) => {
+    req.flash('success_msg', '登陸成功')
+    res.redirect('/restaurants')
+  },
+  logout: (req, res) => {
+    req.flash('success_messages', '登出成功')
+    req.logout()
+    res.redirect('/signin')
   }
 }
 
