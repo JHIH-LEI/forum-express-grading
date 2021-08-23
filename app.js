@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const exphbs = require('express-handlebars')
 const port = 3000
+const db = require('./models')
 
 app.engine('handlebars', exphbs({ defaultLayout: 'main' })) //handlebars註冊樣板engine
 app.set('view engine', 'handlebars') //設定使用handlebars作為樣板engine
