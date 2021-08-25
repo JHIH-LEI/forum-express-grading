@@ -41,6 +41,30 @@ const adminController = {
       .then(restaurant => {
         res.render('admin/create', { restaurant: restaurant.toJSON() })
       })
+  },
+
+  putRestaurant: (req, res) => {
+    const { name, tel, address, opening_hours, description } = req.body
+    if (!name) {
+      req.flash('error_messages', 'name didn\'t exit')
+      return res.redirect('back')
+    }
+
+    return Restaurant.findByPk(req.params.id)
+      .then(restaurant => {
+        restaurant.update({
+          name,
+          tel,
+          address,
+          opening_hours,
+          description
+        })
+          .then(restaurant => {
+            restaurant = restaurant.toJSON()
+            req.flash('success_messages', `restaurant: ${restaurant.name} was successfully to update`)
+            res.redirect('/admin/restaurants')
+          })
+      })
   }
 }
 
