@@ -19,6 +19,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+app.use(express.static(__dirname + '/upload'))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
