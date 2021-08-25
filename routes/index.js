@@ -19,7 +19,7 @@ module.exports = (app, passport) => {
       }
       return res.redirect('/')
     }
-    return res.redirect('/singin')
+    return res.redirect('/signin')
   }
 
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
@@ -27,6 +27,8 @@ module.exports = (app, passport) => {
 
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
+  app.get('/admin/restaurants/create', authenticatedAdmin, adminController.createRestaurant)
+  app.post('/admin/restaurants', adminController.postRestaurant)
 
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
