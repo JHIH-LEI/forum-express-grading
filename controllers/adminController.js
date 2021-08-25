@@ -28,10 +28,18 @@ const adminController = {
         res.redirect('admin/restaurants')
       })
   },
+
   getRestaurant: (req, res) => {
     return Restaurant.findByPk(req.params.id)
       .then(restaurant => {
         res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
+      })
+  },
+
+  editRestaurant: (req, res) => {
+    return Restaurant.findByPk(req.params.id)
+      .then(restaurant => {
+        res.render('admin/create', { restaurant: restaurant.toJSON() })
       })
   }
 }
