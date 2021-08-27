@@ -15,27 +15,21 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Role</th>
       <th scope="col">#</th>
     </tr>
   </thead>
   <tbody>
-    {{#each restaurants}}
+    {{#each users}}
     <tr>
       <th scope="row">{{this.id}}</th>
       <td>{{this.name}}</td>
+      <td>{{this.email}}</td>
+      <td>{{#if this.isAdmin}}admin{{else}}users{{/if}}</td>
       <td>
-        <button type="button" class="btn btn-link">
-          <a href="/admin/restaurants/{{this.id}}">
-            Show
-          </a>
-        </button>
-        <button type="button" class="btn btn-link">
-          <a href="/admin/restaurants/{{this.id}}/edit">
-            Edit
-          </a>
-        </button>
-        <form action="/admin/restaurants/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
-          <button type="submit" class="btn btn-link">Delete</button>
+        <form action="/admin/users/{{this.id}}/toggleAdmin?_method=PUT" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-link">{{#if this.isAdmin}}set as user{{else}}set as admin{{/if}}</button>
         </form>
       </td>
     </tr>
