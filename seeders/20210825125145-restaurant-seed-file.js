@@ -10,7 +10,7 @@ module.exports = {
         tel: faker.phone.phoneNumber(),
         address: faker.address.streetAddress(),
         opening_hours: '8:00',
-        image: `https://loremflickr.com/320/240/restaurant,food/?random=${Math.random() * 100}`,
+        image: `https://loremflickr.com/320/240/restaurant,food/?lock=${Math.random() * 100}`,
         description: faker.lorem.text(),
         createdAt: new Date(),
         updatedAt: new Date()
