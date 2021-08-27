@@ -1,17 +1,19 @@
 const db = require('../models')
 const Restaurant = db.Restaurant
 const User = db.User
-const fs = require('fs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const adminController = {
   getRestaurants: (req, res) => {
-    return Restaurant.findAll({ raw: true, next: true }).then(restaurants => {
-      return res.render('admin/restaurants', {
-        restaurants: restaurants
-      })
+    return Restaurant.findAll({
+      raw: true,
+      next: true,
+      attributes: ['id', 'name']
     })
+      .then(restaurants => {
+        return res.render('admin/restaurants', { restaurants })
+      })
   },
 
   createRestaurant: (req, res) => {
@@ -56,7 +58,7 @@ const adminController = {
   },
 
   getRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id)
+    return Restaurant.findByPk(req.params.id, { attributes: ['id', 'name', 'tel', 'address', 'opening_hours', 'description', 'image'] })
       .then(restaurant => {
         res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
       })
@@ -129,7 +131,11 @@ const adminController = {
 
   // 與操作使用者有關
   getUsers: (req, res) => {
-    User.findAll({ raw: true, nest: true })
+    User.findAll({
+      raw: true,
+      nest: true,
+      attributes: ['id', 'name', 'email', 'isAdmin']
+    })
       .then(users => res.render('admin/users', { users }))
       .catch(err => console.log(err))
   },
