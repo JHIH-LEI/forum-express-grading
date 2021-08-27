@@ -24,8 +24,8 @@ const userController = {
           password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
         })
           .then(user => {
-            req.flash('success_messages', '註冊成功')
-            res.redirect('/signin')
+            // 直接幫他登陸
+            res.redirect(307, '/signin')
           })
       })
   },
