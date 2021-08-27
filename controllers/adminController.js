@@ -1,16 +1,19 @@
 const db = require('../models')
 const Restaurant = db.Restaurant
-const fs = require('fs')
+const User = db.User
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const adminController = {
   getRestaurants: (req, res) => {
-    return Restaurant.findAll({ raw: true, next: true }).then(restaurants => {
-      return res.render('admin/restaurants', {
-        restaurants: restaurants
-      })
+    return Restaurant.findAll({
+      raw: true,
+      next: true,
+      attributes: ['id', 'name']
     })
+      .then(restaurants => {
+        return res.render('admin/restaurants', { restaurants })
+      })
   },
 
   createRestaurant: (req, res) => {
@@ -55,7 +58,7 @@ const adminController = {
   },
 
   getRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id)
+    return Restaurant.findByPk(req.params.id, { attributes: ['id', 'name', 'tel', 'address', 'opening_hours', 'description', 'image'] })
       .then(restaurant => {
         res.render('admin/restaurant', { restaurant: restaurant.toJSON() })
       })
@@ -123,6 +126,31 @@ const adminController = {
       .then(restaurant => {
         restaurant.destroy()
           .then(restaurant => res.redirect('/admin/restaurants'))
+      })
+  },
+
+  // 與操作使用者有關
+  getUsers: (req, res) => {
+    User.findAll({
+      raw: true,
+      nest: true,
+      attributes: ['id', 'name', 'email', 'isAdmin']
+    })
+      .then(users => res.render('admin/users', { users }))
+      .catch(err => console.log(err))
+  },
+
+  toggleAdmin: (req, res) => {
+    User.findByPk(req.params.id)
+      .then(user => {
+        const isAdmin = user.isAdmin ? false : true
+        const authority = isAdmin ? '管理員' : '使用者'
+        user.update({ isAdmin })
+          .then(user => {
+            req.flash('success_messages', `已成功將${user.name}設為${authority}`)
+            res.redirect('/admin/users')
+          })
+          .catch(err => console.log(err))
       })
   }
 }
