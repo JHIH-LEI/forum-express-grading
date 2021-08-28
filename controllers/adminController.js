@@ -143,9 +143,32 @@ const adminController = {
   toggleAdmin: (req, res) => {
     User.findByPk(req.params.id)
       .then(user => {
-        const isAdmin = user.isAdmin ? false : true
-        const authority = isAdmin ? '管理員' : '使用者'
-        user.update({ isAdmin })
+        user.isAdmin = !user.isAdmin //切換權限
+        const authority = user.isAdmin ? 'admin' : 'user' //權限名稱
+
+        // 如果是要變更成使用者，必須先檢查是不是只有一個管理員 
+        if (authority === 'user') {
+          return User.count({
+            where: {
+              isAdmin: true
+            }
+          })
+            .then(count => {
+              if (count === 1) {
+                // 如果已經是最後一位管理員就跳出警告，並不執行變更身份 
+                req.flash('error_messages', '變更失敗，因為管理員數量不能為0')
+                return res.redirect('/admin/users')
+              }
+              user.update({ isAdmin: user.isAdmin })
+                .then(user => {
+                  req.flash('success_messages', `已成功將${user.name}設為${authority}`)
+                  res.redirect('/admin/users')
+                })
+            })
+            .catch(err => console.log(err))
+        }
+
+        user.update({ isAdmin: user.isAdmin })
           .then(user => {
             req.flash('success_messages', `已成功將${user.name}設為${authority}`)
             res.redirect('/admin/users')
