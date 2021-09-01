@@ -1,42 +1,45 @@
 <h1>餐廳後台</h1>
-<a href="/admin/restaurants">Restaurants</a>
+<a href="/admin/restaurants">restaurants</a>
 <span>｜</span>
 <a href="/admin/categories">Categories</a>
 <span>｜</span>
 <a href="/admin/users">Users</a>
-<a href='/admin/restaurants/create'>
+<a href='/admin/categories/create'>
   <button type="button" class="btn btn-primary">New Restaurant</button>
 </a>
 <br />
 <br />
+
+<form action="/admin/categories" method="POST">
+  <div class="d-flex w-50 form-group">
+    <input type="text" class="form-control">
+    <button class="btn mx-2" type="submit">submit</button>
+  </div>
+</form>
 
 <table class="table">
   <thead class="thead-dark">
     <tr>
       <th scope="col">#</th>
       <th scope="col">Name</th>
-      <th scope="col">Category</th>
       <th scope="col">#</th>
     </tr>
   </thead>
   <tbody>
-    {{#each restaurants}}
+    {{#each categories}}
     <tr>
       <th scope="row">{{this.id}}</th>
       <td>{{this.name}}</td>
-      <td>{{this.Category.name}}</td>
       <td>
         <button type="button" class="btn btn-link">
-          <a href="/admin/restaurants/{{this.id}}">
+          <a href="/admin/categories/{{this.id}}">
             Show
           </a>
         </button>
-        <button type="button" class="btn btn-link">
-          <a href="/admin/restaurants/{{this.id}}/edit">
-            Edit
-          </a>
-        </button>
-        <form action="/admin/restaurants/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+        <form action="/admin/categories/{{this.id}}?_method=PUT" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-link">Edit</button>
+        </form>
+        <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
           <button type="submit" class="btn btn-link">Delete</button>
         </form>
       </td>
