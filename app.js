@@ -10,7 +10,7 @@ const methodOverride = require('method-override')
 const port = process.env.PORT || 3000
 const db = require('./models')
 
-app.engine('handlebars', exphbs({ defaultLayout: 'main' })) //handlebars註冊樣板engine
+app.engine('handlebars', exphbs({ defaultLayout: 'main', helpers: require('./config/handlebars-helper') })) //handlebars註冊樣板engine
 app.set('view engine', 'handlebars') //設定使用handlebars作為樣板engine
 
 app.use(bodyParser.urlencoded({ extended: true }))
