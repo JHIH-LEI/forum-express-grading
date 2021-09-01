@@ -34,9 +34,8 @@ const categoryController = {
     }
   },
 
-  putCategories: async (req, res) => {
+  putCategory: async (req, res) => {
     try {
-      const id = req.params.id
       const { name } = req.body
       if (!name.trim()) {
         req.flash('error_messages', 'you need type in category name')
@@ -50,7 +49,6 @@ const categoryController = {
     catch (err) {
       console.warn(err)
     }
-
   }
 }
 
