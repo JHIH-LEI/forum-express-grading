@@ -14,19 +14,22 @@ const adminController = {
       include: [Category]
     })
       .then(restaurants => {
-        // JSON.stringify(restaurants)
-        // const data = JSON.toJSON(restaurants[0])
-        console.log(restaurants[0])
         return res.render('admin/restaurants', { restaurants })
       })
   },
 
-  createRestaurant: (req, res) => {
-    return res.render('admin/create')
+  createRestaurant: async (req, res) => {
+    try {
+      const categories = await Category.findAll({ raw: true, nest: true })
+      return res.render('admin/create', { categories })
+    }
+    catch (err) {
+      console.warn(err)
+    }
   },
 
   postRestaurant: (req, res) => {
-    const { name, tel, address, opening_hours, description } = req.body
+    const { name, tel, address, opening_hours, description, categoryId } = req.body
     if (!name) {
       req.flash('error_messages', '餐廳名稱是必填欄位')
       return res.redirect('back')
@@ -43,7 +46,8 @@ const adminController = {
           address,
           opening_hours,
           description,
-          image: file ? img.data.link : null
+          image: file ? img.data.link : null,
+          CategoryId: categoryId
         })
           .then(restaurant => {
             restaurant = restaurant.toJSON()
@@ -53,7 +57,7 @@ const adminController = {
       })
       // 將圖片上傳到imgur圖庫，拿到網址存進db
     } else {
-      return Restaurant.create({ name, tel, address, opening_hours, description, image: null })
+      return Restaurant.create({ name, tel, address, opening_hours, description, image: null, CategoryId: categoryId })
         .then(restaurant => {
           restaurant = restaurant.toJSON()
           req.flash('success_messages', `new restaurant：${restaurant.name} was successfully created`)
@@ -69,15 +73,16 @@ const adminController = {
       })
   },
 
-  editRestaurant: (req, res) => {
+  editRestaurant: async (req, res) => {
+    const categories = await Category.findAll({ raw: true, nest: true })
     return Restaurant.findByPk(req.params.id)
       .then(restaurant => {
-        res.render('admin/create', { restaurant: restaurant.toJSON() })
+        res.render('admin/create', { restaurant: restaurant.toJSON(), categories })
       })
   },
 
   putRestaurant: (req, res) => {
-    const { name, tel, address, opening_hours, description } = req.body
+    const { name, tel, address, opening_hours, description, categoryId } = req.body
     if (!name) {
       req.flash('error_messages', 'name didn\'t exit')
       return res.redirect('back')
@@ -94,7 +99,8 @@ const adminController = {
               address,
               opening_hours,
               description,
-              image: file ? img.data.link : restaurant.image
+              image: file ? img.data.link : restaurant.image,
+              CategoryId: categoryId
             })
               .then(restaurant => {
                 restaurant = restaurant.toJSON()
@@ -114,7 +120,8 @@ const adminController = {
             address,
             opening_hours,
             description,
-            image: restaurant.image //圖片沒更動，維持原圖片路徑
+            image: restaurant.image, //圖片沒更動，維持原圖片路徑
+            CategoryId: categoryId
           })
             .then(restaurant => {
               restaurant = restaurant.toJSON()
