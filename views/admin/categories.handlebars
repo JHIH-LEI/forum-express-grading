@@ -9,14 +9,23 @@
 </a>
 <br />
 <br />
-
+{{!-- 類別新增/編輯輸入欄,如果有特定一筆類別就是修改頁,沒就是新增頁 --}}
+{{#if category}}
+<form action="/admin/categories/{{category.id}}?_method=PUT" method="POST">
+  <div class="d-flex w-50 form-group">
+    <input type="text" class="form-control" name="name" placeholder="name" value="{{category.name}}">
+    <button class="btn mx-2" type="submit">update</button>
+    <a href="/admin/categories">or Create New</a>
+  </div>
+</form>
+{{else}}
 <form action="/admin/categories" method="POST">
   <div class="d-flex w-50 form-group">
     <input type="text" class="form-control" name="name" placeholder="name">
-    <button class="btn mx-2" type="submit">submit</button>
+    <button class="btn mx-2" type="submit">create new</button>
   </div>
 </form>
-
+{{/if}}
 <table class="table">
   <thead class="thead-dark">
     <tr>
@@ -31,12 +40,7 @@
       <th scope="row">{{this.id}}</th>
       <td>{{this.name}}</td>
       <td>
-        <button type="button" class="btn btn-link">
-          <a href="/admin/categories/{{this.id}}">
-            Show
-          </a>
-        </button>
-        <form action="/admin/categories/{{this.id}}?_method=PUT" method="POST" style="display: inline;">
+        <form action="/admin/categories/{{this.id}}" style="display: inline;">
           <button type="submit" class="btn btn-link">Edit</button>
         </form>
         <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">

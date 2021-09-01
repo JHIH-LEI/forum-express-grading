@@ -40,8 +40,10 @@ module.exports = (app, passport) => {
   app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
   app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin)
   // 與類別操作有關
-  app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories),
-    app.post('/admin/categories', authenticatedAdmin, categoryController.postCategories)
+  app.get('/admin/categories/:id', authenticatedAdmin, categoryController.getCategories)
+  app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
+  app.post('/admin/categories', authenticatedAdmin, categoryController.postCategories)
+  app.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategories)
 
   app.get('/signup', userController.signUpPage)
   app.post('/signup', userController.signUp)
