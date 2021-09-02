@@ -59,8 +59,7 @@ module.exports = (app, passport) => {
   app.get('/signin', userController.signinPage)
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signin)
   app.get('/logout', userController.logout)
-  app.get('/users/:id', (req, res) => {
-    req.flash('error_messages', '用戶檔案功能還未實現，已將您返回主頁')
-    res.redirect('/restaurants')
-  })
+  // 個人檔案
+  app.get('/users/:id', authenticated, userController.getUser)
+
 }

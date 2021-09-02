@@ -6,6 +6,7 @@ const userController = {
   signUpPage: (req, res) => {
     return res.render('signup')
   },
+
   signUp: async (req, res) => {
     try {
       const { name, email, password, passwordCheck } = req.body
@@ -31,17 +32,30 @@ const userController = {
       console.warn(err)
     }
   },
+
   signinPage: (req, res) => {
     return res.render('signin')
   },
+
   signin: (req, res) => {
     req.flash('success_messages', '登陸成功')
     res.redirect('/restaurants')
   },
+
   logout: (req, res) => {
     req.flash('success_messages', '登出成功')
     req.logout()
     res.redirect('/signin')
+  },
+
+  getUser: async (req, res) => {
+    try {
+      const { id } = req.params
+      const user = await User.findByPk(id, { attributes: ['id', 'name', 'email', 'avatar', 'banner'] })
+      return res.render('profile', { user: user.toJSON() })
+    } catch (err) {
+      console.warn(err)
+    }
   }
 }
 
