@@ -15,6 +15,14 @@ const restController = {
     } catch (err) {
       console.log(err)
     }
+  },
+  getRestaurant: async (req, res) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id, { include: { model: Category, attributes: ['name'] } })
+      res.render('restaurant', { restaurant: restaurant.toJSON() })
+    } catch (err) {
+      console.warn(err)
+    }
   }
 }
 module.exports = restController
