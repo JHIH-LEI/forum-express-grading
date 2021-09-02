@@ -52,9 +52,13 @@ const categoryController = {
   },
 
   deleteCategory: async (req, res) => {
-    const category = await Category.findByPk(req.params.id)
-    category.destroy()
-    res.redirect('back')
+    try {
+      const category = await Category.findByPk(req.params.id)
+      category.destroy()
+      res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
   }
 }
 
