@@ -63,13 +63,17 @@ const restController = {
   },
   getRestaurant: async (req, res) => {
     try {
-      const restaurant = await Restaurant.findByPk(req.params.id, {
+      const { commentId, id } = req.params
+      const restaurant = await Restaurant.findByPk(id, {
         include: [
           { model: Category, attributes: ['name'] },
           { model: Comment, include: { model: User, attributes: ['id', 'name'] } }
         ]
       })
-      return res.render('restaurant', { restaurant: restaurant.toJSON() })
+      return res.render('restaurant', {
+        restaurant: restaurant.toJSON(),
+        commentId //代表想要修改的評論
+      })
     } catch (err) {
       console.warn(err)
     }

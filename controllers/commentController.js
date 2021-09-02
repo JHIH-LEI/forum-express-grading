@@ -23,7 +23,19 @@ const commentController = {
     } catch (err) {
       console.warn(err)
     }
+  },
 
+  putComment: async (req, res) => {
+    try {
+      const { id, restaurantId } = req.params
+      const { text } = req.body
+      const comment = await Comment.findByPk(id)
+      comment.text = text
+      await comment.save()
+      return res.redirect(`/restaurants/${restaurantId}`)
+    } catch (err) {
+      console.warn(err)
+    }
   }
 }
 

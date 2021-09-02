@@ -24,25 +24,39 @@
 
 <h3>所有評論：</h3>
 {{#each restaurant.Comments}}
+{{!-- 顯示自己留言的編輯鈕 --}}
+{{#ifCond this.User.id ../user.id}}
+<a href="/restaurants/{{../restaurant.id}}/{{this.id}}" class="btn btn-secondary" style="float: right;">edit</a>
+{{/ifCond}}
+{{!-- 管理員可以刪除留言 --}}
 {{#if ../user.isAdmin}}
 <form action="/comments/{{this.id}}?_method=DELETE" method="POST" style="float: right;">
   <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 {{/if}}
+{{!-- 每則留言 --}}
 <blockquote class="blockquote mb-0">
   <h4><a href="/users/{{this.User.id}}">{{this.User.name}}</a></h4>
+  {{#ifCond this.id ../commentId}}
+  {{!-- 編輯留言 --}}
+  <form action="/comments/{{../commentId}}/{{../restaurant.id}}?_method=PUT" method="post">
+    <textarea class="form-control" name="text" id="text" rows="3">{{this.text}}</textarea>
+    <button type="submit" class="btn btn-primary my-2">確認</button>
+  </form>
+  {{else}}
+  {{!-- 留言內容 --}}
   <p>{{this.text}}</p>
+  {{/ifCond}}
   <footer class="blockquote-footer">{{fromNow this.updatedAt}}</footer>
 </blockquote>
 <hr />
 {{/each}}
-
+{{!-- 新增評論 --}}
 <form action="/comments/{{restaurant.id}}" method="post">
   <div id="form-group">
     <label for="text">留下評論</label>
-    <textarea name="text" id="text" rows="3"></textarea>
+    <textarea class="form-control" name="text" id="text" rows="3"></textarea>
   </div>
-  <button type="submit" class="btn btn-primary">評論</button>
+  <button type="submit" class="btn btn-primary my-2">評論</button>
 </form>
-
-<a href="javascript:history.back()">回上一頁</a>
+<a href="/restaurants">回上一頁</a>
