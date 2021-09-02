@@ -20,4 +20,13 @@
 </div>
 <br />
 <br />
+
+<form action="/comments/{{restaurants.id}}" method="post">
+  <div id="form-group">
+    <label for="text">留下評論</label>
+    <textarea name="text" id="text" rows="3"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">評論</button>
+</form>
+
 <a href="javascript:history.back()">回上一頁</a>
