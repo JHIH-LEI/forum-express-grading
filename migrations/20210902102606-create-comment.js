@@ -13,11 +13,11 @@ module.exports = {
       },
       UserId: {
         type: Sequelize.INTEGER,
-        references: { model: 'user', key: 'id' },
+        references: { model: 'users', key: 'id' },
       },
       RestaurantId: {
         type: Sequelize.INTEGER,
-        references: { model: 'restaurant', key: 'id' },
+        references: { model: 'restaurants', key: 'id' },
         onDelete: 'cascade'
       },
       createdAt: {
