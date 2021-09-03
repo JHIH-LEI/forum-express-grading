@@ -8,6 +8,12 @@ const commentController = {
       const RestaurantId = Number(req.params.restaurantsId)
       const { text } = req.body
       const { id: UserId } = req.user
+      // 如果使用者已經評論過，就不能再評論，請他直接編輯
+      const comment = await Comment.findOne({ where: { UserId, RestaurantId }, attributes: ['id', 'RestaurantId'] })
+      if (comment) {
+        req.flash('error_messages', '一家餐廳只能評論一次')
+        return res.redirect(`/restaurants/${RestaurantId}/${comment.id}`)
+      }
       await Comment.create({ text, UserId, RestaurantId })
       return res.redirect('back')
     } catch (err) {
