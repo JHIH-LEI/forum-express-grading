@@ -58,7 +58,7 @@ const restController = {
         page, totalPage, prev, next
       })
     } catch (err) {
-      console.log(err)
+      console.warn(err)
     }
   },
   getRestaurant: async (req, res) => {

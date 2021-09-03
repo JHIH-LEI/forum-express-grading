@@ -1,0 +1,18 @@
+<form action="/users/{{user.id}}?_method=PUT" enctype="multipart/form-data" method="POST">
+  <div class="card-body">
+    <div class="form-group">
+      <label for="name">暱稱</label>
+      <input type="text" name="name" id="name" class="form-control" value="{{user.name}}" placeholder="name">
+    </div>
+    <div class="form-group">
+      <label for="avatar" class="d-block">avatar</label>
+      <input type="file" name="avatar" id="avatar" class="form-control-file">
+    </div>
+    <div class="form-group">
+      <label for="banner" class="d-block">banner</label>
+      <input type="file" name="banner" id="banner" class="form-control-file">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="/users/{{user.id}}" class="btn">返回上一頁</button>
+  </div>
+</form>

@@ -25,7 +25,7 @@
 <h3>所有評論：</h3>
 {{#each restaurant.Comments}}
 {{!-- 顯示自己留言的編輯鈕 --}}
-{{#ifCond this.User.id ../user.id}}
+{{#ifCond this.User.id ../selfUser.id}}
 <a href="/restaurants/{{../restaurant.id}}/{{this.id}}" class="btn btn-secondary" style="float: right;">edit</a>
 {{/ifCond}}
 {{!-- 管理員可以刪除留言 --}}

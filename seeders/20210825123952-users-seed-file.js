@@ -9,7 +9,8 @@ module.exports = {
         isAdmin: true,
         name: 'root',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        avatar: 'https://image.flaticon.com/icons/png/512/1462/1462009.png'
       }, {
         email: 'user1@example.com',
         password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),

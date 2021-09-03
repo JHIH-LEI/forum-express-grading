@@ -26,6 +26,15 @@ module.exports = (app, passport) => {
     return res.redirect('/signin')
   }
 
+  // 確定登陸使用者是否等於被操作的使用者
+  const isSelfUser = (req, res, next) => {
+    if (req.params.id !== req.user.id.toString()) {
+      req.flash('error_messages', '不可修改非本人資料！')
+      return res.redirect(`/users/${req.user.id}`)
+    }
+    next()
+  }
+
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants/:id/:commentId', authenticated, restController.getRestaurant)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
@@ -60,6 +69,8 @@ module.exports = (app, passport) => {
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signin)
   app.get('/logout', userController.logout)
   // 個人檔案
+  app.get('/users/:id/edit', authenticated, isSelfUser, userController.editUser)
   app.get('/users/:id', authenticated, userController.getUser)
+  app.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avatar' }, { name: 'banner' }]), userController.putUser)
 
 }
