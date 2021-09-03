@@ -6,9 +6,9 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const passport = require('./config/passport')
 const methodOverride = require('method-override')
+const helpers = require('./_helpers')
 
 const port = process.env.PORT || 3000
-const db = require('./models')
 
 app.engine('handlebars', exphbs({ defaultLayout: 'main', helpers: require('./config/handlebars-helper') })) //handlebars註冊樣板engine
 app.set('view engine', 'handlebars') //設定使用handlebars作為樣板engine
@@ -28,7 +28,7 @@ app.use(methodOverride('_method'))
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')
-  res.locals.selfUser = req.user
+  res.locals.selfUser = helpers.getUser(req)
   next()
 })
 

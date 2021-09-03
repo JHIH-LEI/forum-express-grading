@@ -28,9 +28,9 @@ module.exports = (app, passport) => {
 
   // 確定登陸使用者是否等於被操作的使用者
   const isSelfUser = (req, res, next) => {
-    if (req.params.id !== req.user.id.toString()) {
+    if (req.params.id !== helpers.getUser(req).id.toString()) {
       req.flash('error_messages', '不可修改非本人資料！')
-      return res.redirect(`/users/${req.user.id}`)
+      return res.redirect(`/users/${helpers.getUser(req).id}`)
     }
     next()
   }

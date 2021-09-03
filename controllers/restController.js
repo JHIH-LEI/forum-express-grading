@@ -5,6 +5,7 @@ const Comment = db.Comment
 const User = db.User
 
 const pageLimit = 10
+const commentLimit = 3
 
 const restController = {
   getRestaurants: async (req, res) => {
@@ -64,15 +65,43 @@ const restController = {
   getRestaurant: async (req, res) => {
     try {
       const { commentId, id } = req.params
+      // 跟頁數有關的變數
+      const page = Number(req.query.page) || 1
+      const totalComments = await Comment.count({ where: { RestaurantId: id } })
+      const pages = Math.ceil(totalComments / commentLimit)
+      const totalPage = Array.from({ length: pages }).map((d, i) => i + 1)
+      let offset = 0
+      // 如果有選頁數要計算偏移量
+      if (req.query.page) {
+        offset = (page - 1) * commentLimit
+      }
+      // 計算上一頁
+      const prev = page - 1 || 1
+      // 計算下一頁
+      const next = (page + 1) > pages ? page : page + 1
+
+      // 抓餐廳資料
       const restaurant = await Restaurant.findByPk(id, {
         include: [
-          { model: Category, attributes: ['name'] },
-          { model: Comment, include: { model: User, attributes: ['id', 'name'] } }
+          { model: Category, attributes: ['name'] }, //取得餐廳類別名稱
+          {
+            model: Comment, //取得該餐廳的留言
+            separate: true, //如果不加這個，limit跟offset會失效，只能加到Many那
+            limit: commentLimit,
+            offset,
+            order: [
+              ['updatedAt', 'DESC'] //最新的留言在最上面
+            ],
+            include: { model: User, attributes: ['id', 'name', 'updatedAt'] },
+          }
         ]
       })
+
       return res.render('restaurant', {
         restaurant: restaurant.toJSON(),
-        commentId //代表想要修改的評論
+        commentId, //代表想要修改的評論
+        totalPage, //評論總頁數
+        prev, next
       })
     } catch (err) {
       console.warn(err)

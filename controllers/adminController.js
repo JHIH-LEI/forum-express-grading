@@ -42,7 +42,7 @@ const adminController = {
       if (file) {
         //呼叫imgur去讀取用戶上傳的檔案位置，並取得檔案資料
         imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
+        await imgur.upload(file.path, async (err, img) => {
           try {
             let restaurant = await Restaurant.create({
               name,
@@ -104,7 +104,7 @@ const adminController = {
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
+        await imgur.upload(file.path, async (err, img) => {
           try {
             const restaurant = await Restaurant.findByPk(req.params.id)
             await restaurant.update({

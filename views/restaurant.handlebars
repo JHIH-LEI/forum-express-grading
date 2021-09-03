@@ -29,7 +29,7 @@
 <a href="/restaurants/{{../restaurant.id}}/{{this.id}}" class="btn btn-secondary" style="float: right;">edit</a>
 {{/ifCond}}
 {{!-- 管理員可以刪除留言 --}}
-{{#if ../user.isAdmin}}
+{{#if ../selfUser.isAdmin}}
 <form action="/comments/{{this.id}}?_method=DELETE" method="POST" style="float: right;">
   <button type="submit" class="btn btn-danger">Delete</button>
 </form>
@@ -51,6 +51,29 @@
 </blockquote>
 <hr />
 {{/each}}
+{{!-- 分頁 --}}
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    <li class="page-item">
+      <a class="page-link" href="/restaurants/{{restaurant.id}}/?page={{prev}}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+
+    {{#if totalPage}}
+    {{#each totalPage}}
+    <li class="page-item"><a class="page-link" href="/restaurants/{{../restaurant.id}}/?page={{this}}">{{this}}</a></li>
+    {{/each}}
+    {{else}}
+    <li class="page-item"><a class="page-link" href="/restaurants/{{restaurant.id}}/?page=1">1</a></li>
+    {{/if}}
+    <li class="page-item">
+      <a class="page-link" href="/restaurants/{{restaurant.id}}/?page={{next}}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
 {{!-- 新增評論 --}}
 <form action="/comments/{{restaurant.id}}" method="post">
   <div id="form-group">
@@ -59,4 +82,4 @@
   </div>
   <button type="submit" class="btn btn-primary my-2">評論</button>
 </form>
-<a href="/restaurants">回上一頁</a>
+<a href="javascript:history.back()">回上一頁</a>
