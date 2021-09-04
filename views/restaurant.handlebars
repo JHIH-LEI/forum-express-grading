@@ -24,12 +24,13 @@
     </form>
     {{/if}}
     {{!-- 按讚按鈕 --}}
-
+    {{#if isLiked}}
     <form action="/like/{{restaurant.id}}?_method=DELETE" method="POST"><button type="submit"
         class="btn btn-danger">Unlike</button></form>
-
+    {{else}}
     <form action="/like/{{restaurant.id}}" method="POST"><button type="submit" class="btn btn-primary">Like</button>
     </form>
+    {{/if}}
   </div>
   <hr>
 </div>

@@ -114,19 +114,22 @@ const restController = {
           // 撈出有收藏該餐廳的使用者
           {
             model: User,
-            as: 'LikedUser',
+            as: 'LikedUsers',
             attributes: ['id']
           }
         ]
       })
       const isFavorited = restaurant.FavoritedUsers.map(user => user.id).includes(req.user.id)
+      // 這個餐廳是否有使用者按讚的紀錄
+      const isLiked = restaurant.LikedUsers.map(user => user.id).includes(req.user.id)
       await restaurant.increment('viewCounts')
       return res.render('restaurant', {
         restaurant: restaurant.toJSON(),
         commentId, //代表想要修改的評論
         totalPage, //評論總頁數
         prev, next,
-        isFavorited
+        isFavorited,
+        isLiked
       })
     } catch (err) {
       console.warn(err)
