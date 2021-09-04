@@ -16,6 +16,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'UserId',
         as: 'LikedRestaurants'
       })
+      // 一個使用者可以追蹤很多使用者（查他追蹤了哪些人）
+      User.belongsToMany(models.User, {
+        through: models.FollowShip,
+        foreignKey: 'followerId',
+        as: 'followings'
+      })
+      // 一個使用者可以被很多人追蹤，要查被哪些人追蹤，固定被追蹤的欄位
+      User.belongsToMany(models.User, {
+        through: models.FollowShip,
+        foreignKey: 'followingId',
+        as: 'followers'
+      })
     }
   };
   User.init({
