@@ -39,7 +39,7 @@ const restController = {
       // 把要傳到前端的資料其餐廳描述做修改
       const restaurants = result.rows.map(rest => ({
         ...rest, //其他資料不變
-        description: rest.description.substring(0, 50) //描述只要50字
+        description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description //描述最多50字
       }))
 
       // 計算總頁數及前端所需的頁數陣列
@@ -106,6 +106,27 @@ const restController = {
     } catch (err) {
       console.warn(err)
     }
+  },
+
+  getFeeds: async (req, res) => {
+    // 撈出10筆餐廳資料
+    let restaurants = await Restaurant.findAll({ raw: true, nest: true, limit: 10, order: [['createdAt', 'DESC']], attribute: ['id', 'name', 'description', 'createdAt'], include: { model: Category, attributes: ['name'] } })
+    restaurants = restaurants.map(rest => ({
+      ...rest, //其他資料不變
+      description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description //描述最多50字
+    }))
+    // 撈出10筆評論資料
+    const comments = await Comment.findAll({
+      raw: true, nest: true,
+      limit: 10,
+      attribute: ['text', 'updatedAt'],
+      order: [['createdAt', 'DESC']],
+      include: [
+        { model: Restaurant, attributes: ['id', 'name'] },
+        { model: User, attributes: ['id', 'name'] }
+      ]
+    })
+    return res.render('feeds', { restaurants, comments })
   }
 }
 module.exports = restController
