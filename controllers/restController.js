@@ -36,11 +36,20 @@ const restController = {
         offset,
         limit: pageLimit
       })
+      // 找到該使用者按讚的餐廳清單
+      const user = await User.findByPk(req.user.id,
+        {
+          attributes: ['id'],
+          include: { model: Restaurant, as: 'LikedRestaurants', attributes: ['id'] }
+        })
       // 把要傳到前端的資料其餐廳描述做修改
       const restaurants = result.rows.map(rest => ({
         ...rest, //其他資料不變
         description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description, //描述最多50字
-        isFavorited: req.user.FavoritedRestaurants.map(rest => rest.id).includes(rest.id) //將每個餐廳比對使用者收藏的餐廳清單，如果一樣就代表有收藏
+        //將每個餐廳比對使用者收藏的餐廳清單，如果一樣就代表有收藏
+        isFavorited: req.user.FavoritedRestaurants.map(rest => rest.id).includes(rest.id),
+        // 比對餐廳清單與使用者按讚的餐廳，如果有一樣代表有按讚
+        isLiked: user.LikedRestaurants.map(rest => rest.id).includes(rest.id)
       }))
 
       // 計算總頁數及前端所需的頁數陣列
@@ -100,6 +109,12 @@ const restController = {
           {
             model: User,
             as: 'FavoritedUsers',
+            attributes: ['id']
+          },
+          // 撈出有收藏該餐廳的使用者
+          {
+            model: User,
+            as: 'LikedUser',
             attributes: ['id']
           }
         ]
