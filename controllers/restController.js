@@ -136,6 +136,14 @@ const restController = {
       }))
       return res.render('feeds', { restaurants, comments })
     })
+  },
+  getDashboard: async (req, res) => {
+    const restaurant = await Restaurant.findByPk(req.params.id, {
+      attributes: ['name', 'id'],
+      include: [{ model: Category, attributes: ['name'] },
+      { model: Comment, attributes: ['id'] }]
+    })
+    return res.render('dashboard', { restaurant: restaurant.toJSON() })
   }
 }
 module.exports = restController
