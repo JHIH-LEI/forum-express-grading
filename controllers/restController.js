@@ -39,7 +39,8 @@ const restController = {
       // 把要傳到前端的資料其餐廳描述做修改
       const restaurants = result.rows.map(rest => ({
         ...rest, //其他資料不變
-        description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description //描述最多50字
+        description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description, //描述最多50字
+        isFavorited: req.user.FavoritedRestaurants.map(rest => rest.id).includes(rest.id) //將每個餐廳比對使用者收藏的餐廳清單，如果一樣就代表有收藏
       }))
 
       // 計算總頁數及前端所需的頁數陣列
@@ -62,6 +63,7 @@ const restController = {
       console.warn(err)
     }
   },
+
   getRestaurant: async (req, res) => {
     try {
       const { commentId, id } = req.params
@@ -93,15 +95,23 @@ const restController = {
               ['updatedAt', 'DESC'] //最新的留言在最上面
             ],
             include: { model: User, attributes: ['id', 'name', 'updatedAt'] },
+          },
+          // 引入有收藏該餐廳的使用者清單（預設：回傳收藏此餐廳的使用者列表、Favorite） 
+          {
+            model: User,
+            as: 'FavoritedUsers',
+            attributes: ['id']
           }
         ]
       })
+      const isFavorited = restaurant.FavoritedUsers.map(user => user.id).includes(req.user.id)
       await restaurant.increment('viewCounts')
       return res.render('restaurant', {
         restaurant: restaurant.toJSON(),
         commentId, //代表想要修改的評論
         totalPage, //評論總頁數
-        prev, next
+        prev, next,
+        isFavorited
       })
     } catch (err) {
       console.warn(err)
