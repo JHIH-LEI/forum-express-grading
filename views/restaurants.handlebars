@@ -24,6 +24,11 @@
         </p>
         <span class="badge badge-secondary">{{this.Category.name}}</span>
         <p class="card-text">{{this.description}}</p>
+        {{!-- 收藏按鈕 --}}
+        <form action="/favorite/{{this.id}}?_method=DELETE" method="POST"><button type="submit"
+            class="btn btn-danger">移除最愛</button></form>
+        <form action="/favorite/{{this.id}}" method="POST"><button type="submit" class="btn btn-primary">加到最愛</button>
+        </form>
       </div>
     </div>
   </div>
@@ -31,6 +36,7 @@
 </div>
 <br />
 <br />
+{{!-- 分頁 --}}
 <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">
     <li class="page-item">

@@ -74,5 +74,7 @@ module.exports = (app, passport) => {
   app.get('/users/:id/edit', authenticated, isSelfUser, userController.editUser)
   app.get('/users/:id', authenticated, userController.getUser)
   app.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avatar' }, { name: 'banner' }]), userController.putUser)
-
+  // 收藏
+  app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+  app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
 }
