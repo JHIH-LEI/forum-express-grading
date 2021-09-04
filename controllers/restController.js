@@ -108,25 +108,34 @@ const restController = {
     }
   },
 
-  getFeeds: async (req, res) => {
-    // 撈出10筆餐廳資料
-    let restaurants = await Restaurant.findAll({ raw: true, nest: true, limit: 10, order: [['createdAt', 'DESC']], attribute: ['id', 'name', 'description', 'createdAt'], include: { model: Category, attributes: ['name'] } })
-    restaurants = restaurants.map(rest => ({
-      ...rest, //其他資料不變
-      description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description //描述最多50字
-    }))
-    // 撈出10筆評論資料
-    const comments = await Comment.findAll({
-      raw: true, nest: true,
-      limit: 10,
-      attribute: ['text', 'updatedAt'],
-      order: [['createdAt', 'DESC']],
-      include: [
-        { model: Restaurant, attributes: ['id', 'name'] },
-        { model: User, attributes: ['id', 'name'] }
-      ]
+  getFeeds: (req, res) => {
+    return Promise.all([
+      // 撈出10筆餐廳資料
+      Restaurant.findAll({
+        raw: true, nest: true,
+        limit: 10,
+        order: [['createdAt', 'DESC']],
+        attribute: ['id', 'name', 'description', 'createdAt'],
+        include: { model: Category, attributes: ['name'] }
+      }),
+      // 撈出10筆評論資料
+      Comment.findAll({
+        raw: true, nest: true,
+        limit: 10,
+        attribute: ['text', 'updatedAt'],
+        order: [['createdAt', 'DESC']],
+        include: [
+          { model: Restaurant, attributes: ['id', 'name'] },
+          { model: User, attributes: ['id', 'name'] }
+        ]
+      })
+    ]).then(([restaurants, comments]) => {
+      restaurants = restaurants.map(rest => ({
+        ...rest, //其他資料不變
+        description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description //描述最多50字
+      }))
+      return res.render('feeds', { restaurants, comments })
     })
-    return res.render('feeds', { restaurants, comments })
   }
 }
 module.exports = restController
