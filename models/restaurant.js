@@ -11,7 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Restaurant.belongsTo(models.Category)
-      Restaurant.hasMany(models.Comment)
+      Restaurant.hasMany(models.Comment),
+        //設定多對多關係
+        Restaurant.belongsToMany(models.User, {
+          through: models.Favorite, //透過這張join table找到關係
+          foreignKey: 'RestaurantId', //透過這個FK找，並固定他（這家餐廳的）,
+          as: 'FavoritedUsers', //找完之後的命名
+        })
     }
   };
   Restaurant.init({
