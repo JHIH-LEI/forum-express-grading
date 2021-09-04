@@ -9,7 +9,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
         UserId: 1,
-        RestaurantId: i * 10 + 1
+        RestaurantId: i * 5 + 5
       })
       ), {})
   },
