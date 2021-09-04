@@ -96,7 +96,7 @@ const restController = {
           }
         ]
       })
-
+      await restaurant.increment('viewCounts')
       return res.render('restaurant', {
         restaurant: restaurant.toJSON(),
         commentId, //代表想要修改的評論
@@ -139,7 +139,7 @@ const restController = {
   },
   getDashboard: async (req, res) => {
     const restaurant = await Restaurant.findByPk(req.params.id, {
-      attributes: ['name', 'id'],
+      attributes: ['name', 'id', 'viewCounts'],
       include: [{ model: Category, attributes: ['name'] },
       { model: Comment, attributes: ['id'] }]
     })
