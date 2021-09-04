@@ -9,8 +9,13 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsToMany(models.Restaurant, {
         through: models.Favorite, //透過這個model找到關係
         foreignKey: 'UserId', //透過（固定）UserId去找
-        as: 'FavoritedRestaurants' //model可透過這個找到關聯的資料
+        as: 'FavoritedRestaurants' //model可透過這個方法找到關聯的資料,也就是找到後的資料要存到model資料底下的什麼變數
       })
+      // User.belongsToMany(models.Restaurant, {
+      //   through: models.Like,
+      //   foreignKey: 'UserId',
+      //   as: 'LikedRestaurants'
+      // })
     }
   };
   User.init({
