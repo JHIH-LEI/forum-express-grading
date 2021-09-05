@@ -4,55 +4,135 @@
   <div class="media-body">
     <h5 class="mt-0">{{user.name}}</h5>
     <p>{{user.email}}</p>
-    <p>{{totalComments}}已評論餐廳</p>
-    {{#ifCond user.id selfUser.id}}
-    <a href="/users/{{user.id}}/edit" class="btn btn-primary">edit</a>
-    {{/ifCond}}
+    <p><span class="font-weight-bold">{{totalComments}} </span>已評論餐廳</p>
+    <p><span class="font-weight-bold">{{user.Followings.length}} </span>Followings(追蹤中)</p>
+    <p><span class="font-weight-bold">{{user.Followers.length}} </span>Followers(粉絲)</p>
+    <div id="profile-btn">
+      {{#ifCond user.id selfUser.id}}
+      <a href="/users/{{user.id}}/edit" class="btn btn-primary">edit</a>
+      {{else}}
+      {{#if isFollowed}}
+      <form action="/following/{{user.id}}?_method=DELETE" method="POST"><button type="submit"
+          class="btn btn-danger">取消追蹤</button>
+      </form>
+      {{else}}
+      <form action="/following/{{user.id}}" method="POST"><button type="submit" class="btn btn-primary">追蹤</button>
+      </form>
+      {{/if}}
+      {{/ifCond}}
+    </div>
   </div>
 </div>
-
-<div class="card">
-  <div class="card-header">
-    評論過的餐廳
-  </div>
-  <div class="card-body">
-    <blockquote class="blockquote mb-0">
-      {{!-- 餐廳 --}}
-      <ul class="d-flex flex-row">
-        {{#each user.Comments}}
-        <a href="/restaurants/{{this.Restaurant.id}}" class="restaurant d-flex flex-column mx-3">
-          <img src="{{this.Restaurant.image}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
-          <span class="badge badge-primary text-wrap" style="width: 6rem;">
-            {{this.Restaurant.name}}
-          </span>
-        </a>
-        {{/each}}
-      </ul>
-      {{!-- 分頁 --}}
-      <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-          <li class="page-item">
-            <a class="page-link" href="/users/{{user.id}}/?page={{prev}}" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-
-          {{#if totalPage}}
-          {{#each totalPage}}
-          <li class="page-item"><a class="page-link" href="/users/{{../user.id}}/?page={{this}}">{{this}}</a></li>
+<div class="container">
+  <div class="row my-4">
+    {{!-- 追蹤中 --}}
+    <div class="col-sm-4">
+      <div class="card">
+        <h6 class="card-header text-center">追蹤中 <a href="#">{{user.Followings.length}}</a></h6>
+        <ul class="row">
+          {{#each user.Followings}}
+          <div class="col-sm">
+            {{!-- 放入此人追蹤的名單 --}}
+            <div class="following-person-list d-flex flex-column">
+              <a href="/users/{{this.id}}" class="restaurant d-flex flex-column mx-3">
+                <img src="{{this.avatar}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
+                <span class="badge badge-primary text-wrap" style="width: 6rem;">
+                  {{this.name}}
+                </span>
+              </a>
+            </div>
+          </div>
           {{/each}}
-          {{else}}
-          <li class="page-item"><a class="page-link" href="/users/{{../user.id}}/?page=1">1</a></li>
-          {{/if}}
-          <li class="page-item">
-            <a class="page-link" href="/users/{{user.id}}/?page={{next}}" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
+          {{!-- 放入此人追蹤的名單 --}}
         </ul>
-      </nav>
-      {{!-- 總計 --}}
-      <footer class="blockquote-footer">共{{totalComments}}則評論</cite></footer>
-    </blockquote>
+      </div>
+
+    </div>
+    {{!-- 已評論餐廳 --}}
+    <div class="col-sm-8">
+      <div class="card">
+        <h6 class="card-header  text-center">已評論{{totalComments}}家餐廳<a href="#">-more</a></h6>
+        <div class="card-body">
+
+          {{!-- 餐廳 --}}
+          <ul class="d-flex flex-row">
+            {{#each user.Comments}}
+            <a href="/restaurants/{{this.Restaurant.id}}" class="restaurant d-flex flex-column mx-3">
+              <img src="{{this.Restaurant.image}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
+              <span class="badge badge-primary text-wrap" style="width: 6rem;">
+                {{this.Restaurant.name}}
+              </span>
+            </a>
+            {{/each}}
+          </ul>
+          {{!-- 分頁 --}}
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <li class="page-item">
+                <a class="page-link" href="/users/{{user.id}}/?page={{prev}}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+
+              {{#if totalPage}}
+              {{#each totalPage}}
+              <li class="page-item"><a class="page-link" href="/users/{{../user.id}}/?page={{this}}">{{this}}</a></li>
+              {{/each}}
+              {{else}}
+              <li class="page-item"><a class="page-link" href="/users/{{../user.id}}/?page=1">1</a></li>
+              {{/if}}
+              <li class="page-item">
+                <a class="page-link" href="/users/{{user.id}}/?page={{next}}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row my-4">
+    {{!-- 粉絲 --}}
+    <div class="col-sm-4">
+      <div class="card">
+        <h6 class="card-header text-center">粉絲 <a href="#">{{user.Followers.length}}</a></h6>
+        <ul class="row">
+          {{#each user.Followers}}
+          <div class="col-sm">
+            {{!-- 放入此人追蹤的名單 --}}
+            <div class="following-person-list d-flex flex-column">
+              <a href="/users/{{this.id}}" class="restaurant d-flex flex-column mx-3">
+                <img src="{{this.avatar}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
+                <span class="badge badge-primary text-wrap" style="width: 6rem;">
+                  {{this.name}}
+                </span>
+              </a>
+            </div>
+          </div>
+          {{/each}}
+        </ul>
+      </div>
+
+    </div>
+    {{!-- 已收藏餐廳 --}}
+    <div class="col-sm-8">
+      <div class="card">
+        <h6 class="card-header  text-center">已收藏{{totalComments}}家餐廳<a href="#">-more</a></h6>
+        <div class="card-body">
+          {{!-- 餐廳 --}}
+          <ul class="d-flex flex-row">
+            {{#each user.Comments}}
+            <a href="/restaurants/{{this.Restaurant.id}}" class="restaurant d-flex flex-column mx-3">
+              <img src="{{this.Restaurant.image}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
+              <span class="badge badge-primary text-wrap" style="width: 6rem;">
+                {{this.Restaurant.name}}
+              </span>
+            </a>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

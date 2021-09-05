@@ -10,6 +10,8 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const helpers = require('../_helpers')
 
+const perPageUser = 2
+
 const userController = {
   signUpPage: (req, res) => {
     return res.render('signup')
@@ -69,15 +71,27 @@ const userController = {
       const totalPage = Array.from({ length: pages }).map((item, idex) => (idex + 1))
       let offset = 0
       if (req.query.page) offset = (page - 1) * perPageComments
-      // 取得使用者資料及其評論過的餐廳
+      // 取得使用者資料及其評論過的餐廳、追蹤的人、粉絲
       const user = await User.findByPk(id, {
         attributes: ['id', 'name', 'email', 'avatar', 'banner'],
-        include: [{
-          model: Comment,
-          attributes: ['RestaurantId'],
-          offset, limit: perPageComments,
-          include: { model: Restaurant, attributes: ['id', 'name', 'image'] }
-        }],
+        include: [
+          {
+            model: Comment,
+            attributes: ['RestaurantId'],
+            offset, limit: perPageComments,
+            include: { model: Restaurant, attributes: ['id', 'name', 'image'] }
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id', 'name', 'avatar'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id', 'name', 'avatar'],
+          }
+        ],
       })
 
       if (!user) {
@@ -85,10 +99,17 @@ const userController = {
         return res.redirect(`/users/${helpers.getUser(req).id}`)
       }
 
+      // 修改追蹤者/粉絲清單的長度
+      user.Followings = user.Followings.length > perPageUser ? user.Followings.slice(0, perPageUser) : user.Followings//只回傳兩個正在追隨的人
+      user.Followers = user.Followers.length > perPageUser ? user.Followers.slice(0, perPageUser) : user.Followers //只回傳兩個粉絲
+
+      // 判斷這個使用者是否有被登陸使用者追蹤
+      const isFollowed = user.Followers.map(user => user.id).includes(req.user.id)
       return res.render('profile', {
         user: user.toJSON(),
         totalComments,
-        totalPage, next, prev
+        totalPage, next, prev,
+        isFollowed
       })
     } catch (err) {
       console.warn(err)
