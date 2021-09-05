@@ -3,6 +3,8 @@ const Restaurant = db.Restaurant
 const Category = db.Category
 const Comment = db.Comment
 const User = db.User
+const Favorite = db.Favorite
+const sequelize = require('sequelize')
 
 const pageLimit = 10
 const commentLimit = 3
@@ -181,19 +183,23 @@ const restController = {
 
   getTopRestaurant: async (req, res) => {
     try {
-      // 撈出有收藏此餐廳的人數
-      let restaurants = await Restaurant.findAll({
-        limit: 10,
-        attributes: ['id', 'name', 'description', 'image'],
-        include: [{ model: User, as: 'FavoritedUsers', attributes: ['id'] }]
+      // 鎖定餐廳id，計算出現在收藏紀錄的次數，由大到小排序後抓10筆熱門餐廳出來
+      let restaurants = await Favorite.findAll({
+        group: ['RestaurantId'],
+        attributes: ['RestaurantId', [sequelize.fn('COUNT', sequelize.col('RestaurantId')), 'favoritedCount']],
+        // 關聯餐廳，才能拿到餐廳的詳細資料，要送到前端
+        include: [{ model: Restaurant, attributes: ['id', 'name', 'description', 'image'] }],
+        order: [[sequelize.col('favoritedCount'), 'DESC']], //排序被收藏的次數
+        limit: 10, raw: true, nest: true
       })
+
       // 整理餐廳資料
       restaurants = restaurants.map(restaurant => ({
-        ...restaurant.dataValues,
-        description: restaurant.description.length > 50 ? restaurant.description.substring(0, 50) + '...' : restaurant.description,
-        favoritedCount: restaurant.FavoritedUsers.length,
-        // 檢查有收藏該餐廳的使用者中有無包含登陸者
-        isFavorited: restaurant.FavoritedUsers.map(user => user.id).includes(req.user.id)
+        ...restaurant.Restaurant,
+        description: restaurant.Restaurant.description.length > 50 ? restaurant.Restaurant.description.substring(0, 50) + '...' : restaurant.Restaurant.description,
+        favoritedCount: restaurant.favoritedCount,
+        // 檢查熱門清單是否有被使用者收藏
+        isFavorited: req.user.FavoritedRestaurants.map(rest => rest.id).includes(restaurant.Restaurant.id)
       }))
       // 依照收藏數排序餐廳，由大到小
       restaurants = restaurants.sort((a, b) => b.favoritedCount - a.favoritedCount)

@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'RestaurantId',
         as: 'LikedUsers' //預設：Restaurant.Users，重新為關係命名
       })
+
+      Restaurant.hasMany(models.Favorite)
     }
   };
   Restaurant.init({
