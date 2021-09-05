@@ -218,7 +218,7 @@ const userController = {
       }))
       // 依照追蹤人數排序名單
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-      return res.render('topUser', { users })
+      return res.render('topUser', { users, topUser: 'topUserPage' })
     } catch (err) {
       console.warn(err)
     }

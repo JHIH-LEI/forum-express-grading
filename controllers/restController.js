@@ -165,13 +165,43 @@ const restController = {
       return res.render('feeds', { restaurants, comments })
     })
   },
+
   getDashboard: async (req, res) => {
-    const restaurant = await Restaurant.findByPk(req.params.id, {
-      attributes: ['name', 'id', 'viewCounts'],
-      include: [{ model: Category, attributes: ['name'] },
-      { model: Comment, attributes: ['id'] }]
-    })
-    return res.render('dashboard', { restaurant: restaurant.toJSON() })
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id, {
+        attributes: ['name', 'id', 'viewCounts'],
+        include: [{ model: Category, attributes: ['name'] },
+        { model: Comment, attributes: ['id'] }]
+      })
+      return res.render('dashboard', { restaurant: restaurant.toJSON() })
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  getTopRestaurant: async (req, res) => {
+    try {
+      // 撈出有收藏此餐廳的人數
+      let restaurants = await Restaurant.findAll({
+        limit: 10,
+        attributes: ['id', 'name', 'description', 'image'],
+        include: [{ model: User, as: 'FavoritedUsers', attributes: ['id'] }]
+      })
+      // 整理餐廳資料
+      restaurants = restaurants.map(restaurant => ({
+        ...restaurant.dataValues,
+        description: restaurant.description.length > 50 ? restaurant.description.substring(0, 50) + '...' : restaurant.description,
+        favoritedCount: restaurant.FavoritedUsers.length,
+        // 檢查有收藏該餐廳的使用者中有無包含登陸者
+        isFavorited: restaurant.FavoritedUsers.map(user => user.id).includes(req.user.id)
+      }))
+      // 依照收藏數排序餐廳，由大到小
+      restaurants = restaurants.sort((a, b) => b.favoritedCount - a.favoritedCount)
+      return res.render('topRestaurant', { restaurants, topRest: 'topRestPage' })
+    } catch (err) {
+      console.warn(err)
+    }
   }
+
 }
 module.exports = restController
