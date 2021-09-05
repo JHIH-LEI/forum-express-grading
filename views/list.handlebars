@@ -1,0 +1,50 @@
+{{#if user.Followers}}
+<h1>{{user.name}}的粉絲</h1>
+{{/if}}
+{{#if user.Followings}}
+<h1>{{user.name}}正在追隨：</h1>
+{{/if}}
+{{#if user.FavoritedRestaurants}}
+<h1>{{user.name}}已收藏的餐廳：</h1>
+{{/if}}
+<div class="d-flex flex-wrap">
+  {{!-- 粉絲清單 --}}
+  {{#each user.Followers}}
+  <div class="card m-2" style="width: 18rem;">
+    <img src="{{this.banner}}" class="card-img-top img-fluid" alt="..." style="position: relative;">
+    <img src="{{this.avatar}}" class="card-img-top rounded-circle w-50" alt="..."
+      style="position: absolute;left: 0; right: 0;top: 20px;;margin: auto;width:150px;height:150px">
+    <div class="card-body">
+      <a href="/users/{{this.id}}">
+        <h5 class="text-center">{{this.name}}</h5>
+      </a>
+    </div>
+  </div>
+  {{/each}}
+  {{!-- 追蹤中清單 --}}
+  {{#each user.Followings}}
+  <div class="card m-2" style="width: 18rem;">
+    <img src="{{this.banner}}" class="card-img-top img-fluid" alt="..." style="position: relative;">
+    <img src="{{this.avatar}}" class="card-img-top rounded-circle w-50" alt="..."
+      style="position: absolute;left: 0; right: 0;top: 20px;;margin: auto;width:150px;height:150px">
+    <div class="card-body">
+      <a href="/users/{{this.id}}">
+        <h5 class="text-center">{{this.name}}</h5>
+      </a>
+    </div>
+  </div>
+  {{/each}}
+  {{!-- 收藏餐廳清單 --}}
+  {{#each user.FavoritedRestaurants}}
+  <div class="card m-2" style="width: 18rem;">
+    <img src="{{this.image}}" class="card-img-top img-fluid" alt="..." style="position: relative;">
+    <div class="card-body">
+      <a href="/restaurants/{{this.id}}">
+        <h5 class="text-center">{{this.name}}</h5>
+      </a>
+      <p class="text-center text-secondary">{{this.description}}</p>
+    </div>
+  </div>
+  {{/each}}
+
+</div>

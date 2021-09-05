@@ -77,6 +77,7 @@ module.exports = (app, passport) => {
   app.get('/users/:id', authenticated, userController.getUser)
   app.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avatar' }, { name: 'banner' }]), userController.putUser)
   // 收藏
+  app.get('/favorite/restaurants/:userId', authenticated, userController.getFavoritedRestaurants)
   app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
   app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
   // 讚
@@ -85,4 +86,7 @@ module.exports = (app, passport) => {
   // 追蹤
   app.post('/following/:userId', authenticated, userController.addFollowing)
   app.delete('/following/:userId', authenticated, userController.removeFollowing)
+  app.get('/followings/:userId', authenticated, userController.getFollowings)
+  // 追蹤者
+  app.get('/followers/:userId', authenticated, userController.getFollowers)
 }

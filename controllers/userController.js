@@ -11,6 +11,8 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const helpers = require('../_helpers')
 
 const perPageUser = 2
+const perPageComments = 5
+const perPageFavoritedRest = 5
 
 const userController = {
   signUpPage: (req, res) => {
@@ -62,7 +64,6 @@ const userController = {
     try {
       const { id } = req.params
       // 計算評論頁數相關邏輯
-      const perPageComments = 5
       const page = Number(req.query.page) || 1
       const totalComments = await Comment.count({ where: { UserId: id } })
       const pages = Math.ceil(totalComments / perPageComments)
@@ -82,6 +83,11 @@ const userController = {
             include: { model: Restaurant, attributes: ['id', 'name', 'image'] }
           },
           {
+            model: Restaurant,
+            as: 'FavoritedRestaurants',
+            attributes: ['id', 'image', 'name']
+          },
+          {
             model: User,
             as: 'Followings',
             attributes: ['id', 'name', 'avatar'],
@@ -99,17 +105,23 @@ const userController = {
         return res.redirect(`/users/${helpers.getUser(req).id}`)
       }
 
-      // 修改追蹤者/粉絲清單的長度
-      user.Followings = user.Followings.length > perPageUser ? user.Followings.slice(0, perPageUser) : user.Followings//只回傳兩個正在追隨的人
-      user.Followers = user.Followers.length > perPageUser ? user.Followers.slice(0, perPageUser) : user.Followers //只回傳兩個粉絲
+      const totalFollowings = user.Followings.length
+      const totalFollowers = user.Followers.length
+      const totalFavoritedRestaurants = user.FavoritedRestaurants.length
+
+      // 修改收藏餐廳、追蹤者/粉絲清單的長度
+      user.Followings = totalFollowings > perPageUser ? user.Followings.slice(0, perPageUser) : user.Followings//只回傳兩個正在追隨的人
+      user.Followers = totalFollowers > perPageUser ? user.Followers.slice(0, perPageUser) : user.Followers //只回傳兩個粉絲
+      user.FavoritedRestaurants = totalFavoritedRestaurants > perPageFavoritedRest ? user.FavoritedRestaurants.slice(0, perPageFavoritedRest) : user.FavoritedRestaurants
 
       // 判斷這個使用者是否有被登陸使用者追蹤
       const isFollowed = user.Followers.map(user => user.id).includes(req.user.id)
+
       return res.render('profile', {
         user: user.toJSON(),
-        totalComments,
+        totalComments, totalFavoritedRestaurants, totalFollowers, totalFollowings,
         totalPage, next, prev,
-        isFollowed
+        isFollowed,
       })
     } catch (err) {
       console.warn(err)
@@ -267,6 +279,55 @@ const userController = {
       })
       await followship.destroy()
       return res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  getFollowers: async (req, res) => {
+    try {
+      const user = await User.findOne({
+        where: { id: req.params.userId, },
+        include: [{
+          model: User, as: 'Followers',
+          attributes: ['id', 'name', 'avatar', 'banner']
+        }]
+      })
+      return res.render('list', { user: user.toJSON() })
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  getFollowings: async (req, res) => {
+    try {
+      const user = await User.findOne({
+        where: { id: req.params.userId },
+        include: [{
+          model: User, as: 'Followings',
+          attributes: ['id', 'name', 'avatar', 'banner']
+        }]
+      })
+      return res.render('list', { user: user.toJSON() })
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  getFavoritedRestaurants: async (req, res) => {
+    try {
+      let user = await User.findOne({
+        where: { id: req.params.userId },
+        include: [{
+          model: Restaurant, as: 'FavoritedRestaurants', attributes: ['id', 'name', 'image', 'description']
+        }]
+      })
+
+      user.FavoritedRestaurants = user.FavoritedRestaurants.map(rest => ({
+        ...rest.dataValues,
+        description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description
+      }))
+      return res.render('list', { user: user.toJSON() })
     } catch (err) {
       console.warn(err)
     }

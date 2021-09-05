@@ -28,7 +28,7 @@
     {{!-- 追蹤中 --}}
     <div class="col-sm-4">
       <div class="card">
-        <h6 class="card-header text-center">追蹤中 <a href="#">{{user.Followings.length}}</a></h6>
+        <h6 class="card-header text-center">追蹤中 <a href="/followings/{{user.id}}">{{totalFollowings}}</a></h6>
         <ul class="row">
           {{#each user.Followings}}
           <div class="col-sm">
@@ -51,7 +51,7 @@
     {{!-- 已評論餐廳 --}}
     <div class="col-sm-8">
       <div class="card">
-        <h6 class="card-header  text-center">已評論{{totalComments}}家餐廳<a href="#">-more</a></h6>
+        <h6 class="card-header  text-center">已評論{{totalComments}}家餐廳</h6>
         <div class="card-body">
 
           {{!-- 餐廳 --}}
@@ -96,7 +96,7 @@
     {{!-- 粉絲 --}}
     <div class="col-sm-4">
       <div class="card">
-        <h6 class="card-header text-center">粉絲 <a href="#">{{user.Followers.length}}</a></h6>
+        <h6 class="card-header text-center">粉絲 <a href="/followers/{{user.id}}">{{totalFollowers}}</a></h6>
         <ul class="row">
           {{#each user.Followers}}
           <div class="col-sm">
@@ -113,20 +113,20 @@
           {{/each}}
         </ul>
       </div>
-
     </div>
     {{!-- 已收藏餐廳 --}}
     <div class="col-sm-8">
       <div class="card">
-        <h6 class="card-header  text-center">已收藏{{totalComments}}家餐廳<a href="#">-more</a></h6>
+        <h6 class="card-header  text-center">已收藏{{totalFavoritedRestaurants}}家餐廳{{#if totalFavoritedRestaurants}}<a
+            href="/favorite/restaurants/{{user.id}}">-more</a>{{/if}}</h6>
         <div class="card-body">
           {{!-- 餐廳 --}}
           <ul class="d-flex flex-row">
-            {{#each user.Comments}}
-            <a href="/restaurants/{{this.Restaurant.id}}" class="restaurant d-flex flex-column mx-3">
-              <img src="{{this.Restaurant.image}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
+            {{#each user.FavoritedRestaurants}}
+            <a href="/restaurants/{{this.id}}" class="restaurant d-flex flex-column mx-3">
+              <img src="{{this.image}}" alt="" class="rounded-circle" style="width: 100px;height:100px">
               <span class="badge badge-primary text-wrap" style="width: 6rem;">
-                {{this.Restaurant.name}}
+                {{this.name}}
               </span>
             </a>
             {{/each}}
