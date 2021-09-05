@@ -71,6 +71,7 @@ module.exports = (app, passport) => {
   app.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signin)
   app.get('/logout', userController.logout)
   // 個人檔案
+  app.get('/users/top', authenticated, userController.getTopUser)
   app.get('/users/:id/edit', authenticated, isSelfUser, userController.editUser)
   app.get('/users/:id', authenticated, userController.getUser)
   app.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avatar' }, { name: 'banner' }]), userController.putUser)

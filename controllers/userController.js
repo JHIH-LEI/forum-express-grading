@@ -148,41 +148,79 @@ const userController = {
   },
 
   addFavorite: async (req, res) => {
-    await Favorite.create({
-      RestaurantId: req.params.restaurantId,
-      UserId: req.user.id,
-    })
-    return res.redirect('back')
+    try {
+      await Favorite.create({
+        RestaurantId: req.params.restaurantId,
+        UserId: req.user.id,
+      })
+      return res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
   },
 
   removeFavorite: async (req, res) => {
-    const favorite = await Favorite.findOne({
-      where: {
-        RestaurantId: req.params.restaurantId,
-        UserId: req.user.id
-      }
-    })
-    await favorite.destroy()
-    return res.redirect('back')
+    try {
+      const favorite = await Favorite.findOne({
+        where: {
+          RestaurantId: req.params.restaurantId,
+          UserId: req.user.id
+        }
+      })
+      await favorite.destroy()
+      return res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
   },
 
   addLike: async (req, res) => {
-    await Like.create({
-      UserId: req.user.id,
-      RestaurantId: req.params.restaurantId
-    })
-    return res.redirect('back')
+    try {
+      await Like.create({
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      })
+      return res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
   },
 
   removeLike: async (req, res) => {
-    const like = await Like.findOne({
-      where: {
-        RestaurantId: req.params.restaurantId,
-        UserId: req.user.id
-      }
-    })
-    await like.destroy()
-    return res.redirect('back')
+    try {
+      const like = await Like.findOne({
+        where: {
+          RestaurantId: req.params.restaurantId,
+          UserId: req.user.id
+        }
+      })
+      await like.destroy()
+      return res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  getTopUser: async (req, res) => {
+    try {
+      // 找出所有使用者，及每一個使用者的追蹤者，會回傳每個user資料及對應的followers
+      let users = await User.findAll({
+        attributes: ['id', 'name', 'avatar'],
+        include: [{ model: User, as: 'Followers', attributes: ['id'] }]
+      })
+      // 整理users資料
+      users = users.map(user => ({
+        ...user.dataValues,
+        FollowerCount: user.Followers.length,
+        // 判斷目前登陸的使用者是否已經追蹤他
+        isFollowed: req.user.Followings.map(following => following.id).includes(user.id)
+      }))
+      // 依照追蹤人數排序名單
+      users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
+      return res.render('topUser', { users })
+    } catch (err) {
+      console.warn(err)
+    }
   }
 }
 
