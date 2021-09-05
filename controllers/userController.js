@@ -5,6 +5,7 @@ const Comment = db.Comment
 const Restaurant = db.Restaurant
 const Favorite = db.Favorite
 const Like = db.Like
+const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const helpers = require('../_helpers')
@@ -218,6 +219,33 @@ const userController = {
       // 依照追蹤人數排序名單
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
       return res.render('topUser', { users })
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  addFollowing: async (req, res) => {
+    try {
+      await Followship.create({
+        followerId: req.user.id,
+        followingId: req.params.userId
+      })
+      return res.redirect('back')
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  removeFollowing: async (req, res) => {
+    try {
+      const followship = await Followship.findOne({
+        where: {
+          followerId: req.user.id,
+          followingId: req.params.userId
+        }
+      })
+      await followship.destroy()
+      return res.redirect('back')
     } catch (err) {
       console.warn(err)
     }
