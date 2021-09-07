@@ -30,7 +30,7 @@ module.exports = (app, passport) => {
   const isSelfUser = (req, res, next) => {
     if (req.params.id !== helpers.getUser(req).id.toString()) {
       req.flash('error_messages', '不可修改非本人資料！')
-      return res.redirect(`/users/${helpers.getUser(req).id}`)
+      return res.redirect(`/users/${req.params.id}`)
     }
     next()
   }
