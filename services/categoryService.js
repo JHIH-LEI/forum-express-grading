@@ -36,7 +36,9 @@ const categoryService = {
   putCategory: async (req, res, cb) => {
     try {
       const { name } = req.body
-      if (!name) cb({ status: 'error', message: 'you need type in category name' })
+      if (!name) {
+        return cb({ status: 'error', message: 'you need type in category name' })
+      }
 
       if (!name.trim()) {
         return cb({ status: 'error', message: '類別不能為空白' })

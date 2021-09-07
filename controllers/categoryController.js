@@ -30,21 +30,15 @@ const categoryController = {
     })
   },
 
-  putCategory: async (req, res) => {
-    try {
-      const { name } = req.body
-      if (!name.trim()) {
-        req.flash('error_messages', 'you need type in category name')
+  putCategory: (req, res) => {
+    categoryService.putCategory(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', `${data.message}`)
         return res.redirect('back')
       }
-      // 拿到id，確認是要修改哪個類別
-      const category = await Category.findByPk(req.params.id)
-      await category.update({ name }) //修改類別名稱
-      res.redirect('/admin/categories')
-    }
-    catch (err) {
-      console.warn(err)
-    }
+      req.flash('success_messages', `${data.message}`)
+      return res.redirect('/admin/categories')
+    })
   },
 
   deleteCategory: async (req, res) => {
