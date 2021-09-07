@@ -16,7 +16,7 @@ const adminService = {
       })
       cb({ restaurants }) //完成處理後呼叫cb,傳入data
     } catch (err) {
-      console.warn(err)
+      cb({ status: 'error', message: `${err}` })
     }
   },
 
@@ -29,7 +29,17 @@ const adminService = {
         })
       cb({ restaurant: restaurant.toJSON() })
     } catch (err) {
-      console.warn(err)
+      cb({ status: 'error', message: `${err}` })
+    }
+  },
+
+  deleteRestaurant: async (req, res, cb) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id)
+      await restaurant.destroy()
+      cb({ status: 'success', message: '' })
+    } catch (err) {
+      cb({ status: 'error', message: `${err}` })
     }
   },
 }
