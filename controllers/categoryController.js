@@ -42,13 +42,14 @@ const categoryController = {
   },
 
   deleteCategory: async (req, res) => {
-    try {
-      const category = await Category.findByPk(req.params.id)
-      category.destroy()
-      res.redirect('back')
-    } catch (err) {
-      console.warn(err)
-    }
+    categoryService.deleteCategory(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', `${data.message}`)
+        return res.redirect('/admin/categories')
+      }
+      req.flash('success_messages', `${data.message}`)
+      return res.redirect('/admin/categories')
+    })
   }
 }
 
