@@ -14,7 +14,20 @@ const adminService = {
         attributes: ['id', 'name'],
         include: [Category]
       })
-      cb({ restaurants })
+      cb({ restaurants }) //完成處理後呼叫cb,傳入data
+    } catch (err) {
+      console.warn(err)
+    }
+  },
+
+  getRestaurant: async (req, res, cb) => {
+    try {
+      const restaurant = await Restaurant.findByPk(req.params.id,
+        {
+          attributes: ['id', 'name', 'tel', 'address', 'opening_hours', 'description', 'image'],
+          include: [Category]
+        })
+      cb({ restaurant: restaurant.toJSON() })
     } catch (err) {
       console.warn(err)
     }
