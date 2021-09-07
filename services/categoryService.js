@@ -53,6 +53,21 @@ const categoryService = {
       return cb({ status: 'error', message: `${err}` })
     }
   },
+
+  deleteCategory: async (req, res, cb) => {
+    try {
+      const category = await Category.findByPk(req.params.id)
+
+      if (!category) {
+        return cb({ status: 'error', message: '查無此類別' })
+      }
+      await category.destroy()
+      return cb({ status: 'success', message: '類別刪除成功' })
+    } catch (err) {
+      console.warn(err)
+      cb({ status: 'error', message: `${err}` })
+    }
+  }
 }
 
 module.exports = categoryService
