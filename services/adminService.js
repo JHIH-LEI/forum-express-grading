@@ -68,6 +68,7 @@ const adminService = {
             restaurant = restaurant.toJSON()
             return cb({ status: 'success', message: `new restaurant：${restaurant.name} was successfully created` })
           } catch (err) {
+            console.warn(err)
             cb({ status: 'error', message: `${err}` })
           }
         })
@@ -77,7 +78,55 @@ const adminService = {
         return cb({ status: 'success', message: `new restaurant：${restaurant.name} was successfully created` })
       }
     } catch (err) {
+      console.warn(err)
       cb({ status: 'error', message: `${err}` })
+    }
+  },
+
+  putRestaurant: async (req, res, cb) => {
+    try {
+      const { name, tel, address, opening_hours, description, categoryId } = req.body
+      if (!name) {
+        return cb({ status: 'error', message: 'name didn\'t exit' })
+      }
+      const { file } = req
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        await imgur.upload(file.path, async (err, img) => {
+          try {
+            const restaurant = await Restaurant.findByPk(req.params.id)
+            await restaurant.update({
+              name,
+              tel,
+              address,
+              opening_hours,
+              description,
+              image: file ? img.data.link : restaurant.image,
+              CategoryId: categoryId
+            })
+            return cb({ status: 'success', message: `restaurant: ${restaurant.name} was successfully to update` })
+          } catch (err) {
+            console.warn(err)
+            return cb({ status: 'error', message: `${err}` })
+          }
+        })
+      } else {
+        //如果圖片沒修改
+        const restaurant = await Restaurant.findByPk(req.params.id)
+        await restaurant.update({
+          name,
+          tel,
+          address,
+          opening_hours,
+          description,
+          image: restaurant.image, //圖片沒更動，維持原圖片路徑
+          CategoryId: categoryId
+        })
+        return cb({ status: 'success', message: `restaurant: ${restaurant.name} was successfully to update` })
+      }
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'error', message: `${err}` })
     }
   },
 }
