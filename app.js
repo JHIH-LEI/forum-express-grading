@@ -14,6 +14,7 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main', helpers: require('./con
 app.set('view engine', 'handlebars') //設定使用handlebars作為樣板engine
 
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(session({
   secret: 'secret',
   resave: false,

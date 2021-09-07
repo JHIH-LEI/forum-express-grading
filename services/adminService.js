@@ -42,6 +42,44 @@ const adminService = {
       cb({ status: 'error', message: `${err}` })
     }
   },
+
+  postRestaurant: async (req, res, cb) => {
+    try {
+      const { name, tel, address, opening_hours, description, categoryId } = req.body
+      if (!name) {
+        return cb({ status: 'error', message: '餐廳名稱是必填欄位' })
+      }
+      const { file } = req
+      //如果有圖片上傳，就將圖片路徑存到image欄位
+      if (file) {
+        //呼叫imgur去讀取用戶上傳的檔案位置，並取得檔案資料
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        await imgur.upload(file.path, async (err, img) => {
+          try {
+            let restaurant = await Restaurant.create({
+              name,
+              tel,
+              address,
+              opening_hours,
+              description,
+              image: file ? img.data.link : null,
+              CategoryId: categoryId
+            })
+            restaurant = restaurant.toJSON()
+            return cb({ status: 'success', message: `new restaurant：${restaurant.name} was successfully created` })
+          } catch (err) {
+            cb({ status: 'error', message: `${err}` })
+          }
+        })
+        // 將圖片上傳到imgur圖庫，拿到網址存進db
+      } else {
+        const restaurant = await Restaurant.create({ name, tel, address, opening_hours, description, image: null, CategoryId: categoryId })
+        return cb({ status: 'success', message: `new restaurant：${restaurant.name} was successfully created` })
+      }
+    } catch (err) {
+      cb({ status: 'error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = adminService

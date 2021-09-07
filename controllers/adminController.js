@@ -24,45 +24,15 @@ const adminController = {
     }
   },
 
-  postRestaurant: async (req, res) => {
-    try {
-      const { name, tel, address, opening_hours, description, categoryId } = req.body
-      if (!name) {
-        req.flash('error_messages', '餐廳名稱是必填欄位')
+  postRestaurant: (req, res) => {
+    adminService.postRestaurant(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', `${data.message}`)
         return res.redirect('back')
       }
-      const { file } = req
-      //如果有圖片上傳，就將圖片路徑存到image欄位
-      if (file) {
-        //呼叫imgur去讀取用戶上傳的檔案位置，並取得檔案資料
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        await imgur.upload(file.path, async (err, img) => {
-          try {
-            let restaurant = await Restaurant.create({
-              name,
-              tel,
-              address,
-              opening_hours,
-              description,
-              image: file ? img.data.link : null,
-              CategoryId: categoryId
-            })
-            restaurant = restaurant.toJSON()
-            req.flash('success_messages', `new restaurant：${restaurant.name} was successfully created`)
-            return res.redirect('/admin/restaurants')
-          } catch (err) {
-            console.warn(err)
-          }
-        })
-        // 將圖片上傳到imgur圖庫，拿到網址存進db
-      } else {
-        const restaurant = await Restaurant.create({ name, tel, address, opening_hours, description, image: null, CategoryId: categoryId })
-        req.flash('success_messages', `new restaurant：${restaurant.name} was successfully created`)
-        return res.redirect('/admin/restaurants')
-      }
-    } catch (err) {
-      console.warn(err)
-    }
+      req.flash('success_messages', `${data.message}`)
+      return res.redirect('/admin/restaurants')
+    })
   },
 
   getRestaurant: async (req, res) => {
