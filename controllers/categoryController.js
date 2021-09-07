@@ -1,4 +1,5 @@
 const db = require('../models')
+const categoryService = require('../services/categoryService')
 const Category = db.Category
 
 const categoryController = {
@@ -18,19 +19,15 @@ const categoryController = {
     }
   },
 
-  postCategories: async (req, res) => {
-    try {
-      const { name } = req.body
-      if (!name.trim()) {
-        req.flash('error_messages', 'you need type in category name')
+  postCategories: (req, res) => {
+    categoryService.postCategories(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', `${data.message}`)
         return res.redirect('/admin/categories')
       }
-      await Category.create({ name })
-      res.redirect('/admin/categories')
-    }
-    catch (err) {
-      console.warn(err)
-    }
+      req.flash('success_messages', `${data.message}`)
+      return res.redirect('/admin/categories')
+    })
   },
 
   putCategory: async (req, res) => {
