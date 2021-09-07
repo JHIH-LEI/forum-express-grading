@@ -1,4 +1,3 @@
-const { tr } = require('faker/lib/locales')
 const db = require('../models')
 const Category = db.Category
 
