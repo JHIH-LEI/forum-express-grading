@@ -36,7 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-require('./routes')(app, passport)
+require('./routes')(app)
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
