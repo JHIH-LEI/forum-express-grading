@@ -174,19 +174,11 @@ const userController = {
     }
   },
 
-  getFollowers: async (req, res) => {
-    try {
-      const user = await User.findOne({
-        where: { id: req.params.userId, },
-        include: [{
-          model: User, as: 'Followers',
-          attributes: ['id', 'name', 'avatar', 'banner']
-        }]
-      })
-      return res.render('list', { user: user.toJSON() })
-    } catch (err) {
-      console.warn(err)
-    }
+  getFollowers: (req, res) => {
+    userService.getFollowers(req, res, (data) => {
+      const { user } = data
+      return res.render('list', { user })
+    })
   },
 
   getFollowings: (req, res) => {
