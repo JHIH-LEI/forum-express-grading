@@ -7,6 +7,10 @@ const commentController = {
 
   deleteComment: (req, res) => {
     commentService.deleteComment(req, res, (data) => res.json(data))
+  },
+
+  putComment: (req, res) => {
+    commentService.putComment(req, res, (data) => res.json(data))
   }
 }
 

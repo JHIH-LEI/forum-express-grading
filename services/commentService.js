@@ -37,6 +37,20 @@ const commentService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  putComment: async (req, res, cb) => {
+    try {
+      const { id, restaurantId } = req.params
+      const { text } = req.body
+      const comment = await Comment.findByPk(id)
+      comment.text = text || comment.text
+      await comment.save()
+      return cb({ status: 'success', message: '留言更新成功', restaurantId })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  }
 }
 
 module.exports = commentService
