@@ -88,6 +88,10 @@ const userController = {
 
   getFollowings: (req, res) => {
     userService.getFollowings(req, res, (data) => res.json(data))
+  },
+
+  getFollowers: (req, res) => {
+    userService.getFollowers(req, res, (data) => res.json(data))
   }
 }
 
