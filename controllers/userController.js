@@ -11,10 +11,6 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const helpers = require('../_helpers')
 const userService = require('../services/userService')
 
-const perPageUser = 2
-const perPageComments = 5
-const perPageFavoritedRest = 5
-
 const userController = {
   signUpPage: (req, res) => {
     return res.render('signup')
@@ -77,46 +73,17 @@ const userController = {
     }
   },
 
-  putUser: async (req, res) => {
-    try {
-      const { name } = req.body
-      const { files } = req
-
-      if (!name.trim()) {
-        req.flash('error_messages', '姓名不可為空')
+  putUser: (req, res) => {
+    userService.putUser(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', `${data.message}`)
         return res.redirect('back')
       }
-      const user = await User.findByPk(req.params.id)
-      await user.update({ name })
-      imgur.setClientID(IMGUR_CLIENT_ID)
-      // 如果有檔案
-      if (files) {
-        // 如果檔案有大頭貼
-        if (files.avatar) {
-          await imgur.upload(files.avatar[0].path, async (err, img) => {
-            try {
-              await user.update({ avatar: img.data.link || user.avatar })
-            } catch (err) {
-              console.warn(err)
-            }
-          })
-        }
-        // 如果檔案有封面照
-        if (files.banner) {
-          await imgur.upload(files.banner[0].path, async (err, img) => {
-            try {
-              await user.update({ banner: img.data.link || user.banner })
-            } catch (err) {
-              console.warn(err)
-            }
-          })
-        }
+      if (data.status === 'success') {
+        req.flash('success_messages', `${data.message}`)
+        return res.redirect(`/users/${req.params.id}`)
       }
-      req.flash('success_messages', '資料更新成功')
-      return res.redirect(`/users/${req.params.id}`)
-    } catch (err) {
-      console.warn(err)
-    }
+    })
   },
 
   addFavorite: async (req, res) => {
