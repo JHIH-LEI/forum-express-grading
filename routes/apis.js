@@ -68,5 +68,6 @@ router.delete('/like/:restaurantId', authenticated, userController.removeLike)
 // 追蹤
 router.post('/following/:userId', authenticated, userController.addFollowing)
 router.delete('/following/:userId', authenticated, userController.removeFollowing)
+router.get('/followings/:userId', authenticated, userController.getFollowings)
 
 module.exports = router

@@ -301,6 +301,24 @@ const userService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  getFollowings: async (req, res, cb) => {
+    try {
+      const user = await User.findOne({
+        attributes: ['id', 'name'],
+        where: { id: req.params.userId },
+        include: [{
+          model: User, as: 'Followings',
+          attributes: ['id', 'name', 'avatar', 'banner'],
+          through: { attributes: [] }
+        }]
+      })
+      return cb({ user: user.toJSON() })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = userService

@@ -84,6 +84,10 @@ const userController = {
 
   removeFollowing: (req, res) => {
     userService.removeFollowing(req, res, (data) => res.json(data))
+  },
+
+  getFollowings: (req, res) => {
+    userService.getFollowings(req, res, (data) => res.json(data))
   }
 }
 
