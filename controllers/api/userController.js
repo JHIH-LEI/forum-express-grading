@@ -80,6 +80,10 @@ const userController = {
 
   addFollowing: (req, res) => {
     userService.addFollowing(req, res, (data) => res.json(data))
+  },
+
+  removeFollowing: (req, res) => {
+    userService.removeFollowing(req, res, (data) => res.json(data))
   }
 }
 

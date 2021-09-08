@@ -282,6 +282,25 @@ const userService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  removeFollowing: async (req, res, cb) => {
+    try {
+      const followship = await Followship.findOne({
+        where: {
+          followerId: req.user.id,
+          followingId: req.params.userId
+        }
+      })
+      if (!followship) {
+        return cb({ status: 'error', message: '找不到追蹤紀錄' })
+      }
+      await followship.destroy()
+      return cb({ status: 'success', message: '' })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = userService
