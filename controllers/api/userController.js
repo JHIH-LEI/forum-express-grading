@@ -1,4 +1,3 @@
-const userServie = require('../../services/userService')
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
 const User = db.User
@@ -7,7 +6,6 @@ const User = db.User
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 const userService = require('../../services/userService')
-const user = require('../../models/user')
 const ExtractJwt = passportJWT.ExtractJwt
 const JwtStrategy = passportJWT.Strategy
 
@@ -58,6 +56,10 @@ const userController = {
 
   putUser: (req, res) => {
     userService.putUser(req, res, (data) => res.json(data))
+  },
+
+  getFavoritedRestaurants: (req, res) => {
+    userService.getFavoritedRestaurants(req, res, (data) => res.json(data))
   }
 }
 

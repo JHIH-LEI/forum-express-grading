@@ -58,5 +58,7 @@ router.put('/comments/:id/:restaurantId', authenticated, commentController.putCo
 router.get('/users/top', authenticated, userController.getTopUser)
 router.get('/users/:id', authenticated, userController.getUser)
 router.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avatar' }, { name: 'banner' }]), userController.putUser)
+// 收藏
+router.get('/favorite/restaurants/:userId', authenticated, userController.getFavoritedRestaurants)
 
 module.exports = router

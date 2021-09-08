@@ -170,6 +170,28 @@ const userService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  getFavoritedRestaurants: async (req, res, cb) => {
+    try {
+      let user = await User.findOne({
+        where: { id: req.params.userId },
+        attributes: ['id', 'name'],
+        include: [{
+          model: Restaurant, as: 'FavoritedRestaurants', attributes: ['id', 'name', 'image', 'description'],
+          through: { attributes: [] }
+        }]
+      })
+
+      user.FavoritedRestaurants = user.FavoritedRestaurants.map(rest => ({
+        ...rest.dataValues,
+        description: rest.description.length > 50 ? rest.description.substring(0, 50) + '...' : rest.description
+      }))
+      return cb({ user: user.toJSON() })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  }
 }
 
 module.exports = userService
