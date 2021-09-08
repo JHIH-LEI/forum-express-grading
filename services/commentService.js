@@ -23,6 +23,20 @@ const commentService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  deleteComment: async (req, res, cb) => {
+    try {
+      const comment = await Comment.findByPk(req.params.id)
+      if (!comment) {
+        return cb({ status: 'error', message: '評論不存在，故無法刪除' })
+      }
+      await comment.destroy()
+      return cb({ status: 'success', RestaurantId: comment.RestaurantId })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = commentService

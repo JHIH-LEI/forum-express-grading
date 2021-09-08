@@ -44,5 +44,6 @@ router.post('/signin', userController.signIn)
 router.post('/signup', userController.signUp)
 // 跟評論有關
 router.post('/comments/:restaurantsId', authenticated, commentController.postComment)
+router.delete('/comments/:id', authenticated, authenticatedAdmin, commentController.deleteComment)
 
 module.exports = router
