@@ -4,6 +4,10 @@ const Restaurant = db.Restaurant
 const Comment = db.Comment
 const bcrypt = require('bcryptjs')
 
+const perPageUser = 2
+const perPageComments = 5
+const perPageFavoritedRest = 5
+
 const userService = {
   signUp: async (req, res, cb) => {
     try {
@@ -46,6 +50,76 @@ const userService = {
       // 依照追蹤人數排序名單
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
       return cb({ users, topUser: 'topUserPage' }) // 以後可以改為currentPage，方便前端共用元件做邏輯判斷
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
+
+  getUser: async (req, res, cb) => {
+    try {
+      const { id } = req.params
+      // 計算評論頁數相關邏輯
+      const page = Number(req.query.page) || 1
+      const totalComments = await Comment.count({ where: { UserId: id } })
+      const pages = Math.ceil(totalComments / perPageComments)
+      const next = page + 1 > pages ? page : page + 1
+      const prev = page - 1 < 1 ? page : page - 1
+      const totalPage = Array.from({ length: pages }).map((item, idex) => (idex + 1))
+      let offset = 0
+      if (req.query.page) offset = (page - 1) * perPageComments
+      // 取得使用者資料及其評論過的餐廳、追蹤的人、粉絲
+      const user = await User.findByPk(id, {
+        attributes: ['id', 'name', 'email', 'avatar', 'banner'],
+        include: [
+          {
+            model: Comment,
+            attributes: ['RestaurantId'],
+            offset, limit: perPageComments,
+            include: { model: Restaurant, attributes: ['id', 'name', 'image'] }
+          },
+          {
+            model: Restaurant,
+            as: 'FavoritedRestaurants',
+            attributes: ['id', 'image', 'name'],
+            through: { attributes: [] } //join table資料不需要
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id', 'name', 'avatar'],
+            through: { attributes: [] } //join table資料不需要
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id', 'name', 'avatar'],
+            through: { attributes: [] } //join table資料不需要
+          }
+        ],
+      })
+
+      if (!user) {
+        return cb({ status: 'error', message: '找不到使用者,已返回至您的個人檔案！' })
+      }
+
+      const totalFollowings = user.Followings.length
+      const totalFollowers = user.Followers.length
+      const totalFavoritedRestaurants = user.FavoritedRestaurants.length
+
+      // 修改收藏餐廳、追蹤者/粉絲清單的長度
+      user.Followings = totalFollowings > perPageUser ? user.Followings.slice(0, perPageUser) : user.Followings//只回傳兩個正在追隨的人
+      user.Followers = totalFollowers > perPageUser ? user.Followers.slice(0, perPageUser) : user.Followers //只回傳兩個粉絲
+      user.FavoritedRestaurants = totalFavoritedRestaurants > perPageFavoritedRest ? user.FavoritedRestaurants.slice(0, perPageFavoritedRest) : user.FavoritedRestaurants
+
+      // 判斷這個使用者是否有被登陸使用者追蹤
+      const isFollowed = user.Followers.map(user => user.id).includes(req.user.id)
+      return cb({
+        status: 'success', user: user.toJSON(),
+        totalComments, totalFavoritedRestaurants, totalFollowers, totalFollowings,
+        totalPage, next, prev,
+        isFollowed,
+      })
     } catch (err) {
       console.warn(err)
       return cb({ status: 'server error', message: `${err}` })

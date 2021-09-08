@@ -48,5 +48,6 @@ router.delete('/comments/:id', authenticated, authenticatedAdmin, commentControl
 router.put('/comments/:id/:restaurantId', authenticated, commentController.putComment)
 // 個人檔案
 router.get('/users/top', authenticated, userController.getTopUser)
+router.get('/users/:id', authenticated, userController.getUser)
 
 module.exports = router

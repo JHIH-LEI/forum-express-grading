@@ -49,6 +49,10 @@ const userController = {
 
   getTopUser: (req, res) => {
     userService.getTopUser(req, res, (data) => res.json(data))
+  },
+
+  getUser: (req, res) => {
+    userService.getUser(req, res, (data) => res.json(data))
   }
 }
 
