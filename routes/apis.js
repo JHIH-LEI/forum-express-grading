@@ -46,6 +46,7 @@ router.post('/signup', userController.signUp)
 router.post('/comments/:restaurantsId', authenticated, commentController.postComment)
 router.delete('/comments/:id', authenticated, authenticatedAdmin, commentController.deleteComment)
 router.put('/comments/:id/:restaurantId', authenticated, commentController.putComment)
-
+// 個人檔案
+router.get('/users/top', authenticated, userController.getTopUser)
 
 module.exports = router
