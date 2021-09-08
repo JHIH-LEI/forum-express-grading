@@ -189,19 +189,11 @@ const userController = {
     }
   },
 
-  getFollowings: async (req, res) => {
-    try {
-      const user = await User.findOne({
-        where: { id: req.params.userId },
-        include: [{
-          model: User, as: 'Followings',
-          attributes: ['id', 'name', 'avatar', 'banner']
-        }]
-      })
-      return res.render('list', { user: user.toJSON() })
-    } catch (err) {
-      console.warn(err)
-    }
+  getFollowings: (req, res) => {
+    userService.getFollowings(req, res, (data) => {
+      const { user } = data
+      return res.render('list', { user })
+    })
   },
 
   getFavoritedRestaurants: async (req, res) => {
