@@ -21,8 +21,13 @@ const categoryService = {
   postCategories: async (req, res, cb) => {
     try {
       const { name } = req.body
-      if (!name.trim()) {
+
+      if (!name) {
         return cb({ status: 'error', message: 'you need type in category name' })
+      }
+
+      if (!name.trim()) {
+        return cb({ status: 'error', message: '類別名稱不能為空白' })
       }
       await Category.create({ name })
       return cb({ status: 'success', message: '類別新增成功' })

@@ -129,6 +129,20 @@ const adminService = {
       return cb({ status: 'error', message: `${err}` })
     }
   },
+
+  getUsers: async (req, res, cb) => {
+    try {
+      const users = await User.findAll({
+        raw: true,
+        nest: true,
+        attributes: ['id', 'name', 'email', 'isAdmin']
+      })
+      return cb({ users })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = adminService
