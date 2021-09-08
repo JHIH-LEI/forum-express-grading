@@ -3,6 +3,8 @@ const User = db.User
 const Restaurant = db.Restaurant
 const Comment = db.Comment
 const bcrypt = require('bcryptjs')
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const perPageUser = 2
 const perPageComments = 5
@@ -82,19 +84,19 @@ const userService = {
             model: Restaurant,
             as: 'FavoritedRestaurants',
             attributes: ['id', 'image', 'name'],
-            // through: { attributes: [] } //join table資料不需要
+            through: { attributes: [] } //join table資料不需要
           },
           {
             model: User,
             as: 'Followings',
             attributes: ['id', 'name', 'avatar'],
-            // through: { attributes: [] } //join table資料不需要
+            through: { attributes: [] } //join table資料不需要
           },
           {
             model: User,
             as: 'Followers',
             attributes: ['id', 'name', 'avatar'],
-            // through: { attributes: [] } //join table資料不需要
+            through: { attributes: [] } //join table資料不需要
           }
         ],
       })
@@ -120,6 +122,49 @@ const userService = {
         totalPage, next, prev,
         isFollowed,
       })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
+
+  putUser: async (req, res, cb) => {
+    try {
+      const { name } = req.body
+      const { files } = req
+
+      if (!name.trim()) {
+        return cb({ status: 'error', message: '姓名不可為空' })
+      }
+      const user = await User.findByPk(req.params.id)
+      await user.update({ name })
+      imgur.setClientID(IMGUR_CLIENT_ID)
+      // 如果有檔案
+      if (files) {
+        // 如果檔案有大頭貼
+        if (files.avatar) {
+          await imgur.upload(files.avatar[0].path, async (err, img) => {
+            try {
+              await user.update({ avatar: img.data.link || user.avatar })
+            } catch (err) {
+              console.warn(err)
+              return cb({ status: 'server error', message: `上傳頭貼失敗，錯誤：${err}` })
+            }
+          })
+        }
+        // 如果檔案有封面照
+        if (files.banner) {
+          await imgur.upload(files.banner[0].path, async (err, img) => {
+            try {
+              await user.update({ banner: img.data.link || user.banner })
+            } catch (err) {
+              console.warn(err)
+              return cb({ status: 'server error', message: `上傳封面失敗，錯誤：${err}` })
+            }
+          })
+        }
+      }
+      return cb({ status: 'success', message: '資料更新成功' })
     } catch (err) {
       console.warn(err)
       return cb({ status: 'server error', message: `${err}` })

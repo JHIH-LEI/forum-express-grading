@@ -24,6 +24,14 @@ const authenticatedAdmin = (req, res, next) => {
   }
 }
 
+// 確定登陸使用者是否等於被操作的使用者
+const isSelfUser = (req, res, next) => {
+  if (req.params.id !== req.user.id.toString()) {
+    return res.json({ status: 'error', message: '不可修改非本人資料' })
+  }
+  next()
+}
+
 router.get('/admin', authenticated, authenticatedAdmin, (req, res) => res.redirect('/api/admin/restaurants'))
 router.get('/admin/restaurants', authenticated, authenticatedAdmin, adminController.getRestaurants)
 router.get('/admin/restaurants/:id', authenticated, authenticatedAdmin, adminController.getRestaurant)
@@ -49,5 +57,6 @@ router.put('/comments/:id/:restaurantId', authenticated, commentController.putCo
 // 個人檔案
 router.get('/users/top', authenticated, userController.getTopUser)
 router.get('/users/:id', authenticated, userController.getUser)
+router.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avatar' }, { name: 'banner' }]), userController.putUser)
 
 module.exports = router

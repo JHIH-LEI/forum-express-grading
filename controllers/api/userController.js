@@ -7,6 +7,7 @@ const User = db.User
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 const userService = require('../../services/userService')
+const user = require('../../models/user')
 const ExtractJwt = passportJWT.ExtractJwt
 const JwtStrategy = passportJWT.Strategy
 
@@ -53,6 +54,10 @@ const userController = {
 
   getUser: (req, res) => {
     userService.getUser(req, res, (data) => res.json(data))
+  },
+
+  putUser: (req, res) => {
+    userService.putUser(req, res, (data) => res.json(data))
   }
 }
 
