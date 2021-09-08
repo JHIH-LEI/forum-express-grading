@@ -88,31 +88,17 @@ const adminController = {
     })
   },
 
-  toggleAdmin: async (req, res) => {
-    try {
-      const user = await User.findByPk(req.params.id)
-      user.isAdmin = !user.isAdmin //切換權限
-      const authority = user.isAdmin ? 'admin' : 'user' //權限名稱
-
-      // 如果是要變更成使用者，必須先檢查是不是只有一個管理員 
-      if (authority === 'user') {
-        const count = await User.count({
-          where: {
-            isAdmin: true
-          }
-        })
-        if (count === 1) {
-          // 如果已經是最後一位管理員就跳出警告，並不執行變更身份 
-          req.flash('error_messages', '變更失敗，因為管理員數量不能為0')
-          return res.redirect('/admin/users')
-        }
+  toggleAdmin: (req, res) => {
+    adminService.toggleAdmin(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', `${data.message}`)
+        return res.redirect('/admin/users')
       }
-      await user.update({ isAdmin: user.isAdmin })
-      req.flash('success_messages', `已成功將${user.name}設為${authority}`)
-      return res.redirect('/admin/users')
-    } catch (err) {
-      console.warn(err)
-    }
+      if (data.status === 'success') {
+        req.flash('success_messages', `${data.message}`)
+        return res.redirect('/admin/users')
+      }
+    })
   }
 }
 
