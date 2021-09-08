@@ -249,6 +249,25 @@ const userService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  removeLike: async (req, res, cb) => {
+    try {
+      const like = await Like.findOne({
+        where: {
+          RestaurantId: req.params.restaurantId,
+          UserId: req.user.id
+        }
+      })
+      if (!like) {
+        return cb({ status: 'error', message: '找不到按讚紀錄' })
+      }
+      await like.destroy()
+      return cb({ status: 'success', message: '' })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = userService

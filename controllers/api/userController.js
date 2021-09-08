@@ -72,6 +72,10 @@ const userController = {
 
   addLike: (req, res) => {
     userService.addLike(req, res, (data) => res.json(data))
+  },
+
+  removeLike: (req, res) => {
+    userService.removeLike(req, res, (data) => res.json(data))
   }
 }
 
