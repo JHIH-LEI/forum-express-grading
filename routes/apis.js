@@ -37,5 +37,6 @@ router.put('/admin/categories/:id', categoryController.putCategory)
 router.delete('/admin/categories/:id', categoryController.deleteCategory)
 // 使用者
 router.post('/signin', userController.signIn)
+router.post('/signup', userController.signUp)
 
 module.exports = router

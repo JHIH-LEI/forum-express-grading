@@ -1,3 +1,4 @@
+const userServie = require('../../services/userService')
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
 const User = db.User
@@ -39,6 +40,10 @@ const userController = {
     } catch (err) {
       console.warn(err)
     }
+  },
+
+  signUp: (req, res) => {
+    userServie.signUp(req, res, (data) => res.json(data))
   }
 }
 
