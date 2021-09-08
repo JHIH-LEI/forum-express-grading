@@ -8,12 +8,17 @@
     <h2>{{this.name}}</h2>
     <span class="badge badge-secondary">追蹤人數：{{this.FollowerCount}}</span>
     <p>
+      {{!-- 如果有追蹤就顯示取消，反之亦然 --}}
       {{#if this.isFollowed }}
     <form action="/following/{{this.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit"
         class="btn btn-danger">取消追蹤</button></form>
     {{else}}
+    {{!-- 使用者不能追蹤自己 --}}
+    {{#isnt this.id ../selfUser.id}}
     <form action="/following/{{this.id}}" method="POST" style="display: contents;"><button type="submit"
         class="btn btn-primary">追蹤</button></form>
+    {{/isnt}}
+    {{!-- 使用者不能追蹤自己 --}}
     {{/if}}
     </p>
   </div>
