@@ -7,13 +7,13 @@ const userService = {
     try {
       const { name, email, password, passwordCheck } = req.body
       if (password !== passwordCheck) {
-        return cb({ status: 'error', message: '兩次密碼輸入不同！' })
+        return cb({ status: 'error', message: '兩次密碼輸入不同！', user: { name, email, password, passwordCheck } })
       }
 
       const user = await User.findOne({ where: { email } })
 
       if (user) {
-        return cb({ status: 'error', message: 'Email已被註冊' })
+        return cb({ status: 'error', message: 'Email已被註冊', user: { name, email, password, passwordCheck } })
       }
       await User.create({
         name,

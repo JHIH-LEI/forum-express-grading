@@ -9,6 +9,7 @@ const Followship = db.Followship
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const helpers = require('../_helpers')
+const userService = require('../services/userService')
 
 const perPageUser = 2
 const perPageComments = 5
@@ -19,30 +20,16 @@ const userController = {
     return res.render('signup')
   },
 
-  signUp: async (req, res) => {
-    try {
-      const { name, email, password, passwordCheck } = req.body
-      if (password !== passwordCheck) {
-        req.flash('error_messages', '兩次密碼輸入不同！')
-        return res.render('signup')
+  signUp: (req, res) => {
+    userService.signUp(req, res, (data) => {
+      if (data.status === 'error') {
+        const { name, email, password, passwordCheck } = data.user
+        req.flash('error_messages', `${data.message}`)
+        return res.render('signup', { name, email, password, passwordCheck })
       }
-
-      const user = await User.findOne({ where: { email } })
-
-      if (user) {
-        req.flash('error_messages', 'Email已被註冊！')
-        return res.render('signup')
-      }
-      await User.create({
-        name,
-        email,
-        password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
-      })
-      // 直接幫他登陸
-      res.redirect(307, '/signin')
-    } catch (err) {
-      console.warn(err)
-    }
+      req.flash('success', `${data.message}`)
+      return res.redirect(307, '/signin')
+    })
   },
 
   signinPage: (req, res) => {
