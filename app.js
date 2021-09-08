@@ -4,7 +4,6 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const flash = require('connect-flash')
-const passport = require('./config/passport')
 const methodOverride = require('method-override')
 const helpers = require('./_helpers')
 
@@ -20,6 +19,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
+const passport = require('./config/passport')
 app.use(express.static(__dirname + '/upload'))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -32,10 +37,6 @@ app.use((req, res, next) => {
   res.locals.selfUser = helpers.getUser(req)
   next()
 })
-
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
 
 require('./routes')(app)
 

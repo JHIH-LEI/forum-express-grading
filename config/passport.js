@@ -41,4 +41,37 @@ passport.deserializeUser((id, cb) => {
   })
 })
 
+// JWT
+const jwt = require('jsonwebtoken')
+const passportJWT = require('passport-jwt')
+const ExtractJwt = passportJWT.ExtractJwt
+const JwtStrategy = passportJWT.Strategy
+
+let jwtOptions = {}
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
+jwtOptions.secretOrKey = process.env.JWT_SECRET
+
+// 驗證token，如果成功就把user回傳到req.user中
+const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
+  try {
+    // 成功解碼後，拿payload裡面存放的使用者id來查找user
+    const user = await User.findByPk(jwt_payload.id, {
+      include: [
+        { model: Restaurant, as: 'FavoritedRestaurants' },
+        { model: Restaurant, as: 'LikedRestaurants' },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' }
+      ]
+    })
+    if (!user) {
+      return next(null, false)
+    }
+    return next(null, user)
+  } catch (err) {
+    console.warn(err)
+  }
+})
+
+passport.use(strategy)
+
 module.exports = passport
