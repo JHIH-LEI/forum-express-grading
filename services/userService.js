@@ -82,19 +82,19 @@ const userService = {
             model: Restaurant,
             as: 'FavoritedRestaurants',
             attributes: ['id', 'image', 'name'],
-            through: { attributes: [] } //join table資料不需要
+            // through: { attributes: [] } //join table資料不需要
           },
           {
             model: User,
             as: 'Followings',
             attributes: ['id', 'name', 'avatar'],
-            through: { attributes: [] } //join table資料不需要
+            // through: { attributes: [] } //join table資料不需要
           },
           {
             model: User,
             as: 'Followers',
             attributes: ['id', 'name', 'avatar'],
-            through: { attributes: [] } //join table資料不需要
+            // through: { attributes: [] } //join table資料不需要
           }
         ],
       })

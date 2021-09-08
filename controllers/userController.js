@@ -47,72 +47,23 @@ const userController = {
     res.redirect('/signin')
   },
 
-  getUser: async (req, res) => {
-    try {
-      const { id } = req.params
-      // 計算評論頁數相關邏輯
-      const page = Number(req.query.page) || 1
-      const totalComments = await Comment.count({ where: { UserId: id } })
-      const pages = Math.ceil(totalComments / perPageComments)
-      const next = page + 1 > pages ? page : page + 1
-      const prev = page - 1 < 1 ? page : page - 1
-      const totalPage = Array.from({ length: pages }).map((item, idex) => (idex + 1))
-      let offset = 0
-      if (req.query.page) offset = (page - 1) * perPageComments
-      // 取得使用者資料及其評論過的餐廳、追蹤的人、粉絲
-      const user = await User.findByPk(id, {
-        attributes: ['id', 'name', 'email', 'avatar', 'banner'],
-        include: [
-          {
-            model: Comment,
-            attributes: ['RestaurantId'],
-            offset, limit: perPageComments,
-            include: { model: Restaurant, attributes: ['id', 'name', 'image'] }
-          },
-          {
-            model: Restaurant,
-            as: 'FavoritedRestaurants',
-            attributes: ['id', 'image', 'name']
-          },
-          {
-            model: User,
-            as: 'Followings',
-            attributes: ['id', 'name', 'avatar'],
-          },
-          {
-            model: User,
-            as: 'Followers',
-            attributes: ['id', 'name', 'avatar'],
-          }
-        ],
-      })
-
-      if (!user) {
+  getUser: (req, res) => {
+    userService.getUser(req, res, (data) => {
+      const { status, totalComments, totalFavoritedRestaurants, totalFollowers, totalFollowings, totalPage, next, prev,
+        isFollowed, user } = data
+      if (status === 'error') {
         req.flash('error_messages', '找不到使用者,已返回至您的個人檔案！')
         return res.redirect(`/users/${helpers.getUser(req).id}`)
       }
-
-      const totalFollowings = user.Followings.length
-      const totalFollowers = user.Followers.length
-      const totalFavoritedRestaurants = user.FavoritedRestaurants.length
-
-      // 修改收藏餐廳、追蹤者/粉絲清單的長度
-      user.Followings = totalFollowings > perPageUser ? user.Followings.slice(0, perPageUser) : user.Followings//只回傳兩個正在追隨的人
-      user.Followers = totalFollowers > perPageUser ? user.Followers.slice(0, perPageUser) : user.Followers //只回傳兩個粉絲
-      user.FavoritedRestaurants = totalFavoritedRestaurants > perPageFavoritedRest ? user.FavoritedRestaurants.slice(0, perPageFavoritedRest) : user.FavoritedRestaurants
-
-      // 判斷這個使用者是否有被登陸使用者追蹤
-      const isFollowed = user.Followers.map(user => user.id).includes(req.user.id)
-
-      return res.render('profile', {
-        user: user.toJSON(),
-        totalComments, totalFavoritedRestaurants, totalFollowers, totalFollowings,
-        totalPage, next, prev,
-        isFollowed,
-      })
-    } catch (err) {
-      console.warn(err)
-    }
+      if (status === 'success') {
+        return res.render('profile', {
+          user,
+          totalComments, totalFavoritedRestaurants, totalFollowers, totalFollowings,
+          totalPage, next, prev,
+          isFollowed,
+        })
+      }
+    })
   },
 
   editUser: async (req, res) => {
