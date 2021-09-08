@@ -6,6 +6,7 @@ const passport = require('../config/passport')
 const adminController = require('../controllers/api/adminController')
 const categoryController = require('../controllers/api/categoryController')
 const userController = require('../controllers/api/userController')
+const commentController = require('../controllers/api/commentController')
 
 // 使用passport-jwt，驗證token，並回傳req.user
 const authenticated = passport.authenticate('jwt', { session: false })
@@ -41,5 +42,7 @@ router.delete('/admin/categories/:id', authenticated, authenticatedAdmin, catego
 // 使用者
 router.post('/signin', userController.signIn)
 router.post('/signup', userController.signUp)
+// 跟評論有關
+router.post('/comments/:restaurantsId', authenticated, commentController.postComment)
 
 module.exports = router
