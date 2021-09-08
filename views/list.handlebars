@@ -10,12 +10,12 @@
 <div class="d-flex flex-wrap">
   {{!-- 粉絲清單 --}}
   {{#each user.Followers}}
-  <div class="card m-2" style="width: 18rem;">
-    <img src="{{this.banner}}" class="card-img-top img-fluid" alt="..." style="position: relative;">
-    <img src="{{this.avatar}}" class="card-img-top rounded-circle w-50" alt="..."
+  <div class="card m-2" style="width: 18rem;min-height:18rem">
+    <img src="{{this.banner}}" class="card-img-top img-fluid" alt="banner" style="position: relative;">
+    <img src="{{this.avatar}}" class="card-img-top rounded-circle w-50" alt="avatar"
       style="position: absolute;left: 0; right: 0;top: 20px;;margin: auto;width:150px;height:150px">
     <div class="card-body">
-      <a href="/users/{{this.id}}">
+      <a href="/users/{{this.id}}" style="position: absolute;bottom:50px;left: 0; right: 0;">
         <h5 class="text-center">{{this.name}}</h5>
       </a>
     </div>
@@ -23,12 +23,12 @@
   {{/each}}
   {{!-- 追蹤中清單 --}}
   {{#each user.Followings}}
-  <div class="card m-2" style="width: 18rem;">
-    <img src="{{this.banner}}" class="card-img-top img-fluid" alt="..." style="position: relative;">
-    <img src="{{this.avatar}}" class="card-img-top rounded-circle w-50" alt="..."
+  <div class="card m-2" style="width: 18rem;min-height:18rem">
+    <img src="{{this.banner}}" class="card-img-top img-fluid" alt="banner" style="position: relative;">
+    <img src="{{this.avatar}}" class="card-img-top rounded-circle w-50" alt="avatar"
       style="position: absolute;left: 0; right: 0;top: 20px;;margin: auto;width:150px;height:150px">
     <div class="card-body">
-      <a href="/users/{{this.id}}">
+      <a href="/users/{{this.id}}" style="position: absolute;bottom:50px;left: 0; right: 0;">
         <h5 class="text-center">{{this.name}}</h5>
       </a>
     </div>
