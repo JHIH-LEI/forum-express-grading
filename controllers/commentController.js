@@ -1,24 +1,23 @@
 const db = require('../models')
 const Comment = db.Comment
+const commentService = require('../services/commentService')
 
 const commentController = {
-  postComment: async (req, res) => {
-    try {
-      // 使用者新增某餐廳的評論
-      const RestaurantId = Number(req.params.restaurantsId)
-      const { text } = req.body
-      const { id: UserId } = req.user
-      // 如果使用者已經評論過，就不能再評論，請他直接編輯
-      const comment = await Comment.findOne({ where: { UserId, RestaurantId }, attributes: ['id', 'RestaurantId'] })
-      if (comment) {
-        req.flash('error_messages', '一家餐廳只能評論一次')
-        return res.redirect(`/restaurants/${RestaurantId}/${comment.id}`)
+  postComment: (req, res) => {
+    commentService.postComment(req, res, (data) => {
+      if (data.status === 'error') {
+        const { message, RestaurantId, commentId } = data
+        req.flash('error_messages', `${message}`)
+        // 如果有回傳特定的留言id，代表留言已經存在，導向編輯頁
+        if (commentId) {
+          return res.redirect(`/restaurants/${RestaurantId}/${commentId}`)
+        } else {
+          return res.redirect('back')
+        }
       }
-      await Comment.create({ text, UserId, RestaurantId })
+      // 成功就重新導向
       return res.redirect('back')
-    } catch (err) {
-      console.warn(err)
-    }
+    })
   },
 
   deleteComment: async (req, res) => {
