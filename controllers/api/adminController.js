@@ -35,7 +35,7 @@ const adminController = {
 
   toggleAdmin: (req, res) => {
     adminService.toggleAdmin(req, res, (data) => res.json(data))
-  }
+  },
 }
 
 module.exports = adminController

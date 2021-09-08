@@ -4,6 +4,7 @@ const Restaurant = db.Restaurant
 const Comment = db.Comment
 const Favorite = db.Favorite
 const Like = db.Like
+const Followship = db.Followship
 const bcrypt = require('bcryptjs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
@@ -262,6 +263,19 @@ const userService = {
         return cb({ status: 'error', message: '找不到按讚紀錄' })
       }
       await like.destroy()
+      return cb({ status: 'success', message: '' })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
+
+  addFollowing: async (req, res, cb) => {
+    try {
+      await Followship.create({
+        followerId: req.user.id,
+        followingId: req.params.userId
+      })
       return cb({ status: 'success', message: '' })
     } catch (err) {
       console.warn(err)
