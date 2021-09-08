@@ -78,17 +78,14 @@ const adminController = {
   },
 
   // 與操作使用者有關
-  getUsers: async (req, res) => {
-    try {
-      const users = await User.findAll({
-        raw: true,
-        nest: true,
-        attributes: ['id', 'name', 'email', 'isAdmin']
-      })
-      res.render('admin/users', { users })
-    } catch (err) {
-      console.warn(err)
-    }
+  getUsers: (req, res) => {
+    adminService.getUsers(req, res, (data) => {
+      if (data.status === 'error') {
+        req.flash('error_messages', '系統錯誤無法顯示所有使用者')
+        return res.redirect('/admin/users')
+      }
+      return res.render('admin/users', data)
+    })
   },
 
   toggleAdmin: async (req, res) => {
