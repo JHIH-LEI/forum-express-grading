@@ -211,6 +211,26 @@ const userService = {
       return cb({ status: 'server error', message: `${err}` })
     }
   },
+
+  removeFavorite: async (req, res, cb) => {
+    try {
+      const favorite = await Favorite.findOne({
+        where: {
+          RestaurantId: req.params.restaurantId,
+          UserId: req.user.id
+        }
+      })
+      if (!favorite) {
+        return cb({ status: 'error', message: '收藏不存在！' })
+      }
+      await favorite.destroy()
+      return cb({ status: 'success', message: '取消收藏成功' })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
+
 }
 
 module.exports = userService
