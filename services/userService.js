@@ -3,6 +3,7 @@ const User = db.User
 const Restaurant = db.Restaurant
 const Comment = db.Comment
 const Favorite = db.Favorite
+const Like = db.Like
 const bcrypt = require('bcryptjs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
@@ -231,6 +232,23 @@ const userService = {
     }
   },
 
+  addLike: async (req, res, cb) => {
+    try {
+      // 避免使用者按讚不存在的餐廳
+      const restaurant = await Restaurant.findByPk(req.params.restaurantId)
+      if (!restaurant) {
+        return cb({ status: 'error', message: '餐廳不存在！' })
+      }
+      await Like.create({
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      })
+      return cb({ status: 'success', message: '' })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = userService

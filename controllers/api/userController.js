@@ -68,6 +68,10 @@ const userController = {
 
   removeFavorite: (req, res) => {
     userService.removeFavorite(req, res, (data) => res.json(data))
+  },
+
+  addLike: (req, res) => {
+    userService.addLike(req, res, (data) => res.json(data))
   }
 }
 

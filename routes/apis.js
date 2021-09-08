@@ -62,5 +62,7 @@ router.put('/users/:id', authenticated, isSelfUser, upload.fields([{ name: 'avat
 router.get('/favorite/restaurants/:userId', authenticated, userController.getFavoritedRestaurants)
 router.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
 router.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
+// 讚
+router.post('/like/:restaurantId', authenticated, userController.addLike)
 
 module.exports = router
