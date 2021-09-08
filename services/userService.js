@@ -2,6 +2,7 @@ const db = require('../models')
 const User = db.User
 const Restaurant = db.Restaurant
 const Comment = db.Comment
+const Favorite = db.Favorite
 const bcrypt = require('bcryptjs')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
@@ -191,7 +192,25 @@ const userService = {
       console.warn(err)
       return cb({ status: 'server error', message: `${err}` })
     }
-  }
+  },
+
+  addFavorite: async (req, res, cb) => {
+    try {
+      // 避免使用者新增不存在的餐廳
+      const restaurant = await Restaurant.findByPk(req.params.restaurantId)
+      if (!restaurant) {
+        return cb({ status: 'error', message: '餐廳不存在！' })
+      }
+      await Favorite.create({
+        RestaurantId: req.params.restaurantId,
+        UserId: req.user.id,
+      })
+      return cb({ status: 'success' })
+    } catch (err) {
+      console.warn(err)
+      return cb({ status: 'server error', message: `${err}` })
+    }
+  },
 }
 
 module.exports = userService

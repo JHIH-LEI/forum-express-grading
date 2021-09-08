@@ -60,6 +60,10 @@ const userController = {
 
   getFavoritedRestaurants: (req, res) => {
     userService.getFavoritedRestaurants(req, res, (data) => res.json(data))
+  },
+
+  addFavorite: (req, res) => {
+    userService.addFavorite(req, res, (data) => res.json(data))
   }
 }
 
